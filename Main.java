@@ -14,7 +14,7 @@ public class Main extends Application {
 	
 	@Override
 	public void start(Stage mainStage) throws Exception {
-		UI_MainWindow main_window = new UI_MainWindow();
+		UI_StartWindow main_window = new UI_StartWindow();
 		mainStage.setTitle("OBDII Port Recorder");
 		mainStage.centerOnScreen();
 		Scene scene_MainWindow = new Scene(main_window.get_layout(), 300, 250);

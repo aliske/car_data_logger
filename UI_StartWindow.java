@@ -8,7 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
-public class UI_MainWindow implements EventHandler<ActionEvent> {
+public class UI_StartWindow implements EventHandler<ActionEvent> {
 	
 	Button btn_reset_elm327;
 	Button btn_linefeed_set;
@@ -17,7 +17,7 @@ public class UI_MainWindow implements EventHandler<ActionEvent> {
 	Label lbl_port_used;
 	VBox layout1 = new VBox(10);
 	
-	UI_MainWindow() {
+	UI_StartWindow() {
 		btn_reset_elm327 = new Button("Reset ELM327 Controller");
 		btn_reset_elm327.setOnAction(this);
 		btn_linefeed_set = new Button("Set Line Feeds");

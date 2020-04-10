@@ -26,14 +26,14 @@ public class Serial_Port  {
 		}
 		if(chosen_port == -1)
 		{
-			UI_MainWindow.txt_port_used.setText("[PORT NOT FOUND]");
+			UI_StartWindow.txt_port_used.setText("[PORT NOT FOUND]");
 			AlertBox.display("No Port", "Port " + port + " was not found");
 			System.out.println("Port Not Found....");
 			return false;
 		} else
 		{
 			comPort = SerialPort.getCommPorts()[chosen_port];
-			UI_MainWindow.txt_port_used.setText(port + " (" + comPort.getPortDescription() + ")");
+			UI_StartWindow.txt_port_used.setText(port + " (" + comPort.getPortDescription() + ")");
 			System.out.println(comPort.getPortDescription());
 			comPort.setBaudRate(baud_rate);
 			comPort.setNumStopBits(1);
