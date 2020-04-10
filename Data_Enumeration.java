@@ -6,7 +6,7 @@ public class Data_Enumeration {
 			"Engine Load","Coolant Temp","Short Term Fuel Bank Trim - Bank 1","Long Term Fuel Bank Trim - Bank 2",
 			"Short Term Fuel Bank Trim - Bank 2","Long Term Fuel Bank Trim - Bank 2",
 			"Fuel Pressure","Intake Manifold Pressure","Engine RPM","Vehicle Speed",
-			"Timing Advance","Intake Air Temp","MAF Air Flow Rate","Throttle Possition"};
+			"Timing Advance","Intake Air Temp","MAF Air Flow Rate","Throttle Position"};
 
 	static int[] bytes_returned_1 = { //SERVICE 1 PIDs BYTES RETURNED
 		4,4,2,2,1,1,1,1,1,1,1,1,2,1,1,1,2,1,1,1,2,2,2,2,2,2,2,2,1,1,1,2,4,2,2,2,4,4,

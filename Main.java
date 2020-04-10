@@ -1,5 +1,9 @@
 package car_data_logger;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import javafx.application.*;
 import javafx.scene.*;
 import javafx.stage.Stage;
@@ -9,8 +13,6 @@ public class Main extends Application {
 	
 	public static void main(String[] args) {
 		sp = new Serial_Port();
-		Interpreter interpreter = new Interpreter();
-		interpreter.input_string("41 11 2F 05 6E");
 		launch(args);
 	}
 	
@@ -22,6 +24,34 @@ public class Main extends Application {
 		Scene scene_MainWindow = new Scene(main_window.get_layout(), 300, 250);
 		mainStage.setScene(scene_MainWindow);
 		mainStage.show();
-		sp.init();
+		if(sp.init())
+		{
+			ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+			executor.scheduleAtFixedRate(query_stats, 0, 500000000, TimeUnit.NANOSECONDS);
+			Stage monitorStage = new Stage();
+			UI_MonitorWindow monitor = new UI_MonitorWindow();
+			monitorStage.setTitle("OBDII Monitor");
+			monitorStage.centerOnScreen();
+			monitorStage.setScene(monitor.get_scene());
+			monitorStage.show();
+		}
 	}
+	int command_count = 0;
+	Runnable query_stats = new Runnable() {
+	    public void run() {
+	        try {
+	        	if(command_count == 0)
+	        		Serial_Port.sendStringToComm("01 0C 0D 0F 11");
+	        	else if(command_count == 1)
+	        		Serial_Port.sendStringToComm("01 05 5C 2F");
+	        	
+	        	System.out.println("Command_count: " + command_count);
+	        	command_count++;
+	        	if(command_count == 2)
+	        		command_count = 0;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	    }
+	};
 }

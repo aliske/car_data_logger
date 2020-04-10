@@ -8,8 +8,8 @@ import java.io.*;
 
 public class Serial_Port  {
 	static int baud_rate = 38400;
-	//static String port = "COM3";
-	static String port = "ttyUSB0";
+	static String port = "COM3";
+	//static String port = "ttyUSB0";
 	static String last_received = "";
 	static SerialPort comPort;
 	static int chosen_port = -1;
@@ -35,7 +35,6 @@ public class Serial_Port  {
 		{
 			comPort = SerialPort.getCommPorts()[chosen_port];
 			UI_StartWindow.txt_port_used.setText(port + " (" + comPort.getPortDescription() + ")");
-			System.out.println(comPort.getPortDescription());
 			comPort.setBaudRate(baud_rate);
 			comPort.setNumStopBits(1);
 			comPort.setNumDataBits(8);
@@ -50,20 +49,29 @@ public class Serial_Port  {
 					if(event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
 						return;
 					byte[] newData = new byte[comPort.bytesAvailable()];
-					int numRead = comPort.readBytes(newData, newData.length);
+					int bytes_read = comPort.readBytes(newData, newData.length);
+					//System.out.println("Bytes Read: " + bytes_read);
 					String s = "";
 					try {
-						
 						String incoming = new String(newData, "UTF-8");
-						if(s.endsWith("\r"))
-							s = incoming;
-						else s = s + incoming;
-						last_received = s.trim();
+						
+						if(incoming.endsWith("\n") || incoming.endsWith("\r"))
+						{
+							if(incoming.trim().equals("NO DATA"))
+							{
+								System.out.println("Invalid PID");
+							} else {
+								s = incoming;
+								System.out.println("Received: " + s.trim());
+								interpreter.input_string(s.trim());
+							}
+						}
+						else
+							System.out.println("Bad Data: " + incoming);
 					} catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
-					if(s.endsWith("\r"))
-						System.out.println("--> " + s);
+					
 				}
 			});
 
@@ -84,7 +92,7 @@ public class Serial_Port  {
 		} else
 		{
 			String new_command = command + "\r";
-			System.out.println("<-- " + command);
+			System.out.println("Sent: " + command);
 			comPort.writeBytes(new_command.getBytes(), new_command.length());
 		}
 	}

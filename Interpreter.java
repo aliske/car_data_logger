@@ -3,7 +3,7 @@ package car_data_logger;
 import java.text.DecimalFormat;
 
 public class Interpreter {
-	DecimalFormat df = new DecimalFormat("###.###");
+	DecimalFormat df = new DecimalFormat("###.##");
 	static Data_Enumeration enumerator = new Data_Enumeration();
 	Interpreter()
 	{
@@ -25,7 +25,14 @@ public class Interpreter {
 				if(counter == 0)
 				{
 					pid_hex = parts[i];
+					//System.out.println("PID Hex: " + pid_hex);
 					pid = Integer.parseInt(parts[i], 16);
+					//System.out.println("PID: " + pid);
+					pid_parts[0]="00";
+					pid_parts[1]="00";
+					pid_parts[2]="00";
+					pid_parts[3]="00";
+					pid_parts[4]="00";
 					
 					if(service == 1)
 					{
@@ -56,6 +63,7 @@ public class Interpreter {
 	
 	public void standard_processor(String A, String B, String C, String D, String E, int service, String pid)
 	{
+		//System.out.println(A + " " + B + " " + C + " " + D + " " + E);
 		int valueA = -1;
 		int valueB = -1;
 		int valueC = -1;
@@ -64,42 +72,87 @@ public class Interpreter {
 		double result = -1;
 		if(! A.isEmpty())
 		{
-			valueA = Integer.parseInt(A, 16);
+			try {
+				valueA = Integer.parseInt(A, 16);
+			} catch (NumberFormatException e)
+			{
+				System.out.println("INVALID VALUE");
+			}
 		}
 		if(! B.isEmpty())
 		{
-			valueB = Integer.parseInt(B, 16);
+			try {
+				valueB = Integer.parseInt(B, 16);
+			} catch (NumberFormatException e)
+			{
+				System.out.println("INVALID VALUE");
+			}
 		}
 		if(! C.isEmpty())
 		{
-			valueC = Integer.parseInt(C, 16);
+			try {
+				valueC = Integer.parseInt(C, 16);
+			} catch (NumberFormatException e)
+			{
+				System.out.println("INVALID VALUE");
+			}
 		}
 		if(! D.isEmpty())
 		{
-			valueD = Integer.parseInt(D, 16);
+			try {
+				valueD = Integer.parseInt(D, 16);
+			} catch (NumberFormatException e)
+			{
+				System.out.println("INVALID VALUE");
+			}
 		}
 		if(! E.isEmpty())
 		{
-			valueD = Integer.parseInt(E, 16);
+			try {
+				valueE = Integer.parseInt(E, 16);
+			} catch (NumberFormatException e)
+			{
+				System.out.println("INVALID VALUE");
+			}
 		}
 		if(service == 1 || service == 2) 		//basic PIDs (1) and saved PIDs (2)
 		{
 			if(pid.equals("04")) 				//Engine Load
 				result = (double) valueA / 2.55;
 			else if(pid.equals("05")) 			//Coolant Temp
+			{
 				result = (double) valueA - 40;
+				UI_MonitorWindow.lbl_coolant_temp_value.setText(df.format(result) + " C");
+			}
 			else if(pid.equals("0A")) 			// Fuel Pressure
 				result = (double) valueA * 3;
 			else if(pid.equals("0B"))			//Intake Manifold Pressure
 				result = (double) valueA;
 			else if(pid.equals("0C")) 			//Engine RPM
+			{
 				result = (((double) valueA * 256) + (double) valueB) / 4;
+				UI_MonitorWindow.lbl_rpm_value.setText(df.format(result) + "");
+			}
 			else if(pid.equals("0D")) 			//Vehicle Speed
+			{
 				result = (double) valueA;
+				UI_MonitorWindow.lbl_speed_value.setText(df.format(result) + " kph");
+			}
 			else if(pid.equals("0F")) 			//Intake Air Temperature
+			{
 				result = (double) valueA - 40;
+				UI_MonitorWindow.lbl_intake_air_temp_value.setText(df.format(result) + " C");
+			}
 			else if(pid.equals("11")) 			//Throttle Position
+			{
 				result = (double) valueA / 2.55;
+				UI_MonitorWindow.lbl_throttle_pos_value.setText(df.format(result) + "%");
+			}
+			else if(pid.equals("2F")) 			//Fuel Level
+			{
+				result = (double) valueA / 2.55;
+				UI_MonitorWindow.lbl_fuel_level_value.setText(df.format(result) + "%");
+			}
 			else if(pid.equals("5C")) 			//Engine Oil Temp
 				result = (double) valueA - 40;
 			else if(pid.equals("5E")) 			//Engine Fuel Rate
