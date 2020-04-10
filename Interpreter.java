@@ -1,20 +1,66 @@
 package car_data_logger;
 
+import java.text.DecimalFormat;
+
 public class Interpreter {
-	
-	
-	
+	DecimalFormat df = new DecimalFormat("###.###");
+	static Data_Enumeration enumerator = new Data_Enumeration();
 	Interpreter()
 	{
 		
 	}
 	
-	public double standard_processor(String A, String B, String C, String D, int service, String pid)
+	public void input_string(String data) {
+		int service = -1;
+		int pid = -1;
+		String pid_hex = "00";
+		String[] pid_parts = {"00","00","00","00","00"};
+		int parts_count = 0;
+		String[] parts = data.split(" ");
+		if(parts[0].startsWith("4")) {
+			service = Integer.parseInt(parts[0]) - 40;
+			int counter = 0;
+			for(int i = 1; i < parts.length; i++)
+			{
+				if(counter == 0)
+				{
+					pid_hex = parts[i];
+					pid = Integer.parseInt(parts[i], 16);
+					
+					if(service == 1)
+					{
+						counter = Data_Enumeration.bytes_returned_1[pid];
+					}
+					else if(service == 5)
+					{
+						counter = Data_Enumeration.bytes_returned_5[pid];
+					}
+					else if(service == 9)
+					{
+						counter = Data_Enumeration.bytes_returned_9[pid];
+					}
+					
+					parts_count = counter;
+				} else if (counter == 1)
+				{
+					pid_parts[parts_count - counter] = parts[i];
+					standard_processor(pid_parts[0], pid_parts[1], pid_parts[2], pid_parts[3], pid_parts[4], service, pid_hex);
+					counter--;
+				} else {
+					pid_parts[parts_count - counter] = parts[i];
+					counter--;
+				}
+			}
+		}
+	}
+	
+	public void standard_processor(String A, String B, String C, String D, String E, int service, String pid)
 	{
 		int valueA = -1;
 		int valueB = -1;
 		int valueC = -1;
 		int valueD = -1;
+		int valueE = -1;
 		double result = -1;
 		if(! A.isEmpty())
 		{
@@ -31,6 +77,10 @@ public class Interpreter {
 		if(! D.isEmpty())
 		{
 			valueD = Integer.parseInt(D, 16);
+		}
+		if(! E.isEmpty())
+		{
+			valueD = Integer.parseInt(E, 16);
 		}
 		if(service == 1 || service == 2) 		//basic PIDs (1) and saved PIDs (2)
 		{
@@ -54,8 +104,7 @@ public class Interpreter {
 				result = (double) valueA - 40;
 			else if(pid.equals("5E")) 			//Engine Fuel Rate
 				result = (((double) valueA * 256) + (double) valueB) / 20;
-			else
-				return -1;
+
 		} else if (service == 5) 				//O2 Sensor Banks
 		{
 			if(pid.equals("0101") || pid.equals("0102") || pid.equals("0103") || pid.equals("0104") || pid.equals("0105") || pid.equals("0106") || pid.equals("0107") || pid.equals("0108") || pid.equals("0109") || pid.equals("010A") || pid.equals("010B") || pid.equals("010C") || pid.equals("010D") || pid.equals("010E") || pid.equals("010F") || pid.equals("0110") || pid.equals("0201") || pid.equals("0202") || pid.equals("0203") || pid.equals("0204") || pid.equals("0205") || pid.equals("0206") || pid.equals("0207") || pid.equals("0208") || pid.equals("0209") || pid.equals("020A") || pid.equals("020B") || pid.equals("020C") || pid.equals("020D") || pid.equals("020E") || pid.equals("020F") || pid.equals("0210"))
@@ -63,13 +112,11 @@ public class Interpreter {
 				valueA = Integer.parseInt(A + B, 16);
 				result = (valueA / 65535) * 1.275;
 			}
-			else
-				return -1;
 		} else if (service == 9) 				//vehicle and ECU information
 		{
 			
 		}
-		return result;
+		System.out.println(Data_Enumeration.pid_names_1[Integer.parseInt(pid, 16)] + " : " + df.format(result));
 	}
 	
 	public int[] bit_encoded_processor(String A, String B, String C, String D, int service, int pid)

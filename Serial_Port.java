@@ -13,6 +13,7 @@ public class Serial_Port  {
 	static String last_received = "";
 	static SerialPort comPort;
 	static int chosen_port = -1;
+	static Interpreter interpreter = new Interpreter();
 
 	public boolean init() {
 		System.out.println("Querying Available Ports:");
@@ -50,14 +51,19 @@ public class Serial_Port  {
 						return;
 					byte[] newData = new byte[comPort.bytesAvailable()];
 					int numRead = comPort.readBytes(newData, newData.length);
-					String s = null;
+					String s = "";
 					try {
-						s = new String(newData, "UTF-8");
+						
+						String incoming = new String(newData, "UTF-8");
+						if(s.endsWith("\r"))
+							s = incoming;
+						else s = s + incoming;
 						last_received = s.trim();
 					} catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
-					System.out.println("--> " + s);
+					if(s.endsWith("\r"))
+						System.out.println("--> " + s);
 				}
 			});
 
@@ -78,19 +84,8 @@ public class Serial_Port  {
 		} else
 		{
 			String new_command = command + "\r";
-			if(!command.trim().equals("AT Z"))  //ALWAYS ALLOW RESET COMMAND
-			{
-				if(last_received.equals(">"))
-				{
-					System.out.println("<-- " + command);
-					comPort.writeBytes(new_command.getBytes(), new_command.length());
-				} else
-					System.out.println("Waiting for Prompt...");
-			} else 
-			{
-				System.out.println("<-- " + command);
-				comPort.writeBytes(new_command.getBytes(), new_command.length());
-			}
+			System.out.println("<-- " + command);
+			comPort.writeBytes(new_command.getBytes(), new_command.length());
 		}
 	}
 

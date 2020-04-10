@@ -9,6 +9,8 @@ public class Main extends Application {
 	
 	public static void main(String[] args) {
 		sp = new Serial_Port();
+		Interpreter interpreter = new Interpreter();
+		interpreter.input_string("41 11 2F 05 6E");
 		launch(args);
 	}
 	
