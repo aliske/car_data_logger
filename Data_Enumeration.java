@@ -2,9 +2,11 @@ package car_data_logger;
 
 public class Data_Enumeration {
 	
-	static String[] pid_names_1 = {"","","","","Engine Load","Coolant Temp","","","","",
+	static String[] pid_names_1 = {"PIDs Supported","Monitor Status","Freeze DTC","Fuel System Status",
+			"Engine Load","Coolant Temp","Short Term Fuel Bank Trim - Bank 1","Long Term Fuel Bank Trim - Bank 2",
+			"Short Term Fuel Bank Trim - Bank 2","Long Term Fuel Bank Trim - Bank 2",
 			"Fuel Pressure","Intake Manifold Pressure","Engine RPM","Vehicle Speed",
-			"","Intake Air Temp","","Throttle Possition"};
+			"Timing Advance","Intake Air Temp","MAF Air Flow Rate","Throttle Possition"};
 
 	static int[] bytes_returned_1 = { //SERVICE 1 PIDs BYTES RETURNED
 		4,4,2,2,1,1,1,1,1,1,1,1,2,1,1,1,2,1,1,1,2,2,2,2,2,2,2,2,1,1,1,2,4,2,2,2,4,4,
