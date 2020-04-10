@@ -8,8 +8,9 @@ import java.io.*;
 
 public class Serial_Port  {
 	static int baud_rate = 38400;
-	static String port = "COM3";
-	//String port = "/dev/ttyUSB0";
+	//static String port = "COM3";
+	static String port = "ttyUSB0";
+	static String last_received = "";
 	static SerialPort comPort;
 	static int chosen_port = -1;
 
@@ -19,16 +20,20 @@ public class Serial_Port  {
 		{
 			System.out.println(i + ": " + SerialPort.getCommPorts()[i].getSystemPortName());
 			if(SerialPort.getCommPorts()[i].getSystemPortName().equals(port))
+			{
 				chosen_port = i;
+			}
 		}
 		if(chosen_port == -1)
 		{
+			UI_MainWindow.txt_port_used.setText("[PORT NOT FOUND]");
 			AlertBox.display("No Port", "Port " + port + " was not found");
 			System.out.println("Port Not Found....");
 			return false;
 		} else
 		{
 			comPort = SerialPort.getCommPorts()[chosen_port];
+			UI_MainWindow.txt_port_used.setText(port + " (" + comPort.getPortDescription() + ")");
 			System.out.println(comPort.getPortDescription());
 			comPort.setBaudRate(baud_rate);
 			comPort.setNumStopBits(1);
@@ -48,6 +53,7 @@ public class Serial_Port  {
 					String s = null;
 					try {
 						s = new String(newData, "UTF-8");
+						last_received = s.trim();
 					} catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
@@ -56,7 +62,7 @@ public class Serial_Port  {
 			});
 
 			try {
-				sendStringToComm("ATZ");
+				sendStringToComm("AT Z");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -71,9 +77,20 @@ public class Serial_Port  {
 			AlertBox.display("No Port", "Cannot send command \"" + command + "\".  No Port Found....");
 		} else
 		{
-			System.out.println("<-- " + command);
 			String new_command = command + "\r";
-			comPort.writeBytes(new_command.getBytes(), new_command.length());
+			if(!command.trim().equals("AT Z"))  //ALWAYS ALLOW RESET COMMAND
+			{
+				if(last_received.equals(">"))
+				{
+					System.out.println("<-- " + command);
+					comPort.writeBytes(new_command.getBytes(), new_command.length());
+				} else
+					System.out.println("Waiting for Prompt...");
+			} else 
+			{
+				System.out.println("<-- " + command);
+				comPort.writeBytes(new_command.getBytes(), new_command.length());
+			}
 		}
 	}
 
