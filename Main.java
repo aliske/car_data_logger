@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import javafx.application.*;
 import javafx.scene.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -33,6 +34,8 @@ public class Main extends Application {
 		Scene scene_MainWindow = new Scene(main_window.get_layout(), 300, 250);
 		mainStage.setScene(scene_MainWindow);
 		mainStage.show();
+		Interpreter interpreter = new Interpreter();
+		interpreter.input_string("0111050C0D0F2F00E0:41112F05740C1:14100D000F3D2F2:73000000000000>");
 		if(sp.init())
 		{
 			Thread thread = new Thread(new Runnable() {
@@ -51,21 +54,75 @@ public class Main extends Application {
 	                    		//11: Throttle Position
 	                    		//2F: Fuel Level
 	                    		//5C: Oil Temp
+	                    		if(Serial_Port.started_polling == false)
+	                    			Serial_Port.started_polling = true;
 	                    		if(Serial_Port.ready_to_send)
-	                    			Serial_Port.sendStringToComm("01 11 05 0C 0D 0F 2F 5C");
+	                    			Serial_Port.sendStringToComm("01 11 05 0C 0D 0F 2F");
 	            			} catch (Exception e) {
 	            				e.printStackTrace();
 	            			}
 	                    }
 	                    
 	                    private void update_labels() {
-	                    	UI_MonitorWindow.lbl_oil_temp_value.setText(UI_Data_Store.oil_temp);
-            	        	UI_MonitorWindow.lbl_speed_value.setText(UI_Data_Store.speed);
-            	        	UI_MonitorWindow.lbl_throttle_pos_value.setText(UI_Data_Store.throttle);
-            	        	UI_MonitorWindow.lbl_fuel_level_value.setText(UI_Data_Store.fuel);
-            	        	UI_MonitorWindow.lbl_intake_air_temp_value.setText(UI_Data_Store.intake_temp);
-            	        	UI_MonitorWindow.lbl_rpm_value.setText(UI_Data_Store.rpm);
-            	        	UI_MonitorWindow.lbl_coolant_temp_value.setText(UI_Data_Store.coolant_temp);
+	                    	if(UI_Data_Store.oil_temp.equals(""))
+	                    	{
+	                    		UI_MonitorWindow.lbl_oil_temp_value.setTextFill(Color.web("#ff0000"));
+	                    		UI_MonitorWindow.lbl_oil_temp_value.setText("N/A");
+	                    	} else {
+	                    		UI_MonitorWindow.lbl_oil_temp_value.setTextFill(Color.web("#000000"));
+	                    		UI_MonitorWindow.lbl_oil_temp_value.setText(UI_Data_Store.oil_temp);
+	                    	}
+	                    	if(UI_Data_Store.coolant_temp.equals(""))
+	                    	{
+	                    		UI_MonitorWindow.lbl_coolant_temp_value.setTextFill(Color.web("#ff0000"));
+	                    		UI_MonitorWindow.lbl_coolant_temp_value.setText("N/A");
+	                    	} else {
+	                    		UI_MonitorWindow.lbl_coolant_temp_value.setTextFill(Color.web("#000000"));
+	                    		UI_MonitorWindow.lbl_coolant_temp_value.setText(UI_Data_Store.coolant_temp);
+	                    	}
+	                    	if(UI_Data_Store.speed.equals(""))
+	                    	{
+	                    		UI_MonitorWindow.lbl_speed_value.setTextFill(Color.web("#ff0000"));
+	                    		UI_MonitorWindow.lbl_speed_value.setText("N/A");
+	                    	} else {
+	                    		UI_MonitorWindow.lbl_speed_value.setTextFill(Color.web("#000000"));
+	                    		UI_MonitorWindow.lbl_speed_value.setText(UI_Data_Store.speed);
+	                    	}
+	                    	if(UI_Data_Store.throttle.equals(""))
+	                    	{
+	                    		UI_MonitorWindow.lbl_throttle_pos_value.setTextFill(Color.web("#ff0000"));
+	                    		UI_MonitorWindow.lbl_throttle_pos_value.setText("N/A");
+	                    	} else {
+	                    		UI_MonitorWindow.lbl_throttle_pos_value.setTextFill(Color.web("#000000"));
+	                    		UI_MonitorWindow.lbl_throttle_pos_value.setText(UI_Data_Store.throttle);
+	                    	}
+	                    	if(UI_Data_Store.fuel.equals(""))
+	                    	{
+	                    		UI_MonitorWindow.lbl_fuel_level_value.setTextFill(Color.web("#ff0000"));
+	                    		UI_MonitorWindow.lbl_fuel_level_value.setText("N/A");
+	                    	} else {
+	                    		UI_MonitorWindow.lbl_fuel_level_value.setTextFill(Color.web("#000000"));
+	                    		UI_MonitorWindow.lbl_fuel_level_value.setText(UI_Data_Store.fuel);
+	                    	}
+            	        	
+	                    	if(UI_Data_Store.intake_temp.equals(""))
+	                    	{
+	                    		UI_MonitorWindow.lbl_intake_air_temp_value.setTextFill(Color.web("#ff0000"));
+	                    		UI_MonitorWindow.lbl_intake_air_temp_value.setText("N/A");
+	                    	} else {
+	                    		UI_MonitorWindow.lbl_intake_air_temp_value.setTextFill(Color.web("#000000"));
+	                    		UI_MonitorWindow.lbl_intake_air_temp_value.setText(UI_Data_Store.intake_temp);
+	                    	}
+	                    	if(UI_Data_Store.rpm.equals(""))
+	                    	{
+	                    		UI_MonitorWindow.lbl_rpm_value.setTextFill(Color.web("#ff0000"));
+	                    		UI_MonitorWindow.lbl_rpm_value.setText("N/A");
+	                    	} else {
+	                    		UI_MonitorWindow.lbl_rpm_value.setTextFill(Color.web("#000000"));
+	                    		UI_MonitorWindow.lbl_rpm_value.setText(UI_Data_Store.rpm);
+	                    	}
+            	        	
+            	        	
 	                    }
 	                };
 

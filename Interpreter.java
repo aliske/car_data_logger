@@ -12,19 +12,44 @@ import java.text.DecimalFormat;
 
 public class Interpreter {
 	DecimalFormat df = new DecimalFormat("###.##");
+	String output_format = "yyyyyyyyyyyyyyyyyyyxx xx xx xx xx xxyy xx xx xx xx xx xx xxyy xxyyyyyyyyyyyy";
+	
 	static Data_Enumeration enumerator = new Data_Enumeration();
 	Interpreter()
 	{
 		
 	}
 	
+	private String input_formatter(String input)
+	{
+		String formatted_input = "";
+		int counter = 0;
+		for(int i=0; i < output_format.length(); i++)
+		{
+			if(output_format.charAt(i) == 'x')
+			{
+				formatted_input = formatted_input + input.charAt(counter);
+				counter++;
+			} else if(output_format.charAt(i) == 'y')
+			{
+				counter++;
+			} else
+			{
+				formatted_input = formatted_input + " ";
+			}
+		}
+		System.out.println("Formatted: " + formatted_input);
+		return formatted_input;
+	}
+	
 	public void input_string(String data) {
+		String new_data = input_formatter(data);
 		int service = -1;
 		int pid = -1;
 		String pid_hex = "00";
 		String[] pid_parts = {"00","00","00","00","00"};
 		int parts_count = 0;
-		String[] parts = data.split(" ");
+		String[] parts = new_data.split(" ");
 		if(parts[0].startsWith("4")) {
 			service = Integer.parseInt(parts[0]) - 40;
 			int counter = 0;

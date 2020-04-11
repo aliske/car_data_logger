@@ -21,7 +21,10 @@ public class Serial_Port  {
 	static String last_sent = "";
 	static SerialPort comPort;
 	static int chosen_port = -1;
+	static int count_responses = 0;
+	static String[] response_lines = {"", "", "", "", ""};
 	static Boolean ready_to_send = false;
+	static Boolean started_polling = false;
 	static Interpreter interpreter = new Interpreter();
 	static String OS = System.getProperty("os.name").toLowerCase();
 
@@ -66,28 +69,38 @@ public class Serial_Port  {
 					if(event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
 						return;
 					byte[] newData = new byte[comPort.bytesAvailable()];
+					
 					int bytes_read = comPort.readBytes(newData, newData.length);
+					
 					String s = "";
 					try {
 						String incoming = new String(newData, "UTF-8");
-						if(incoming.trim().equals(">"))
+						//System.out.print(incoming);
+						if(incoming.trim().endsWith(">"))
 						{
 							ready_to_send = true;
 						}
-						if((!incoming.trim().equals(">")) && (incoming.endsWith("\n") || incoming.endsWith("\r")))
+						if(incoming.indexOf("\n") >=0 || incoming.indexOf("\r") >= 0 && started_polling)
 						{
-								s = incoming;
-								System.out.println("Received: " + s.trim());
-								interpreter.input_string(s.trim());
-						}
-						if(incoming.trim() == last_sent.trim())
+							response_lines[count_responses] = response_lines[count_responses] + incoming.trim();
+							s = incoming;
+							count_responses++;
+						} else
 						{
-							try {
-								sendStringToComm("AT E0");
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
+							response_lines[count_responses] = incoming.trim();
 						}
+						if(count_responses == 5)
+						{
+							count_responses = 0;
+							String final_response = response_lines[0].trim() + " " + response_lines[1].trim() + " " + response_lines[2].trim() + " " + response_lines[3].trim() + " " + response_lines[4].trim();
+							final_response = final_response.replace("\r", " ");
+							final_response = final_response.replace(" ", "");
+							
+							//System.out.println(final_response);
+							interpreter.input_string(final_response);
+							
+						}
+						
 						//}
 						//else
 							//System.out.println("Bad Data: " + incoming);
@@ -121,6 +134,12 @@ public class Serial_Port  {
 				ready_to_send = false;
 				String new_command = command + "\r";
 				last_sent = command;
+				response_lines[0] = "";
+				response_lines[1] = "";
+				response_lines[2] = "";
+				response_lines[3] = "";
+				response_lines[4] = "";
+				count_responses=0;
 				System.out.println("Sent: " + command);
 				comPort.writeBytes(new_command.getBytes(), new_command.length());
 			}
