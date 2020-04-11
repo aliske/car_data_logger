@@ -22,6 +22,7 @@ public class Interpreter {
 			int counter = 0;
 			for(int i = 1; i < parts.length; i++)
 			{
+				System.out.println(parts[i]);
 				if(counter == 0)
 				{
 					pid_hex = parts[i];
@@ -37,6 +38,7 @@ public class Interpreter {
 					if(service == 1)
 					{
 						counter = Data_Enumeration.bytes_returned_1[pid];
+						System.out.println("Bytes Expected: " + counter);
 					}
 					else if(service == 5)
 					{
@@ -63,7 +65,7 @@ public class Interpreter {
 	
 	public void standard_processor(String A, String B, String C, String D, String E, int service, String pid)
 	{
-		//System.out.println(A + " " + B + " " + C + " " + D + " " + E);
+		System.out.println("PID: " + pid + " " + A + " " + B + " " + C + " " + D + " " + E);
 		int valueA = -1;
 		int valueB = -1;
 		int valueC = -1;
@@ -122,7 +124,9 @@ public class Interpreter {
 			else if(pid.equals("05")) 			//Coolant Temp
 			{
 				result = (double) valueA - 40;
-				UI_MonitorWindow.lbl_coolant_temp_value.setText(df.format(result) + " C");
+				if(result > 0) {
+					UI_Data_Store.coolant_temp = df.format(result) + " C";
+				}
 			}
 			else if(pid.equals("0A")) 			// Fuel Pressure
 				result = (double) valueA * 3;
@@ -131,30 +135,33 @@ public class Interpreter {
 			else if(pid.equals("0C")) 			//Engine RPM
 			{
 				result = (((double) valueA * 256) + (double) valueB) / 4;
-				UI_MonitorWindow.lbl_rpm_value.setText(df.format(result) + "");
+				UI_Data_Store.rpm = df.format(result);
 			}
 			else if(pid.equals("0D")) 			//Vehicle Speed
 			{
 				result = (double) valueA;
-				UI_MonitorWindow.lbl_speed_value.setText(df.format(result) + " kph");
+				UI_Data_Store.speed = df.format(result) + " kph";
 			}
 			else if(pid.equals("0F")) 			//Intake Air Temperature
 			{
 				result = (double) valueA - 40;
-				UI_MonitorWindow.lbl_intake_air_temp_value.setText(df.format(result) + " C");
+				UI_Data_Store.intake_temp = df.format(result) + " C";
 			}
 			else if(pid.equals("11")) 			//Throttle Position
 			{
 				result = (double) valueA / 2.55;
-				UI_MonitorWindow.lbl_throttle_pos_value.setText(df.format(result) + "%");
+				UI_Data_Store.throttle = df.format(result) + "%";
 			}
 			else if(pid.equals("2F")) 			//Fuel Level
 			{
 				result = (double) valueA / 2.55;
-				UI_MonitorWindow.lbl_fuel_level_value.setText(df.format(result) + "%");
+				UI_Data_Store.fuel = df.format(result) + "%";
 			}
 			else if(pid.equals("5C")) 			//Engine Oil Temp
+			{
 				result = (double) valueA - 40;
+				UI_Data_Store.oil_temp = df.format(result) + " C";
+			}
 			else if(pid.equals("5E")) 			//Engine Fuel Rate
 				result = (((double) valueA * 256) + (double) valueB) / 20;
 
@@ -169,7 +176,7 @@ public class Interpreter {
 		{
 			
 		}
-		System.out.println(Data_Enumeration.pid_names_1[Integer.parseInt(pid, 16)] + " : " + df.format(result));
+		//System.out.println(Data_Enumeration.pid_names_1[Integer.parseInt(pid, 16)] + " : " + df.format(result));
 	}
 	
 	public int[] bit_encoded_processor(String A, String B, String C, String D, int service, int pid)

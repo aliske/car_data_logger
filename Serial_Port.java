@@ -8,15 +8,23 @@ import java.io.*;
 
 public class Serial_Port  {
 	static int baud_rate = 38400;
-	static String port = "COM3";
-	//static String port = "ttyUSB0";
+	static String port = "ttyUSB0";
 	static String last_received = "";
+	static String last_sent = "";
 	static SerialPort comPort;
 	static int chosen_port = -1;
 	static Interpreter interpreter = new Interpreter();
+	static String OS = System.getProperty("os.name").toLowerCase();
 
 	public boolean init() {
 		System.out.println("Querying Available Ports:");
+		if(OS.indexOf("win") >= 0)
+		{
+			port = "COM3";
+		} else if (OS.indexOf("nix") >= 0)
+		{
+			port = "ttyUSB0";
+		}
 		for(int i = 0; i < SerialPort.getCommPorts().length; i++)
 		{
 			System.out.println(i + ": " + SerialPort.getCommPorts()[i].getSystemPortName());
@@ -50,33 +58,36 @@ public class Serial_Port  {
 						return;
 					byte[] newData = new byte[comPort.bytesAvailable()];
 					int bytes_read = comPort.readBytes(newData, newData.length);
-					//System.out.println("Bytes Read: " + bytes_read);
 					String s = "";
 					try {
 						String incoming = new String(newData, "UTF-8");
-						
-						if(incoming.endsWith("\n") || incoming.endsWith("\r"))
+						if((!incoming.trim().equals(">")) && (incoming.endsWith("\n") || incoming.endsWith("\r")))
 						{
-							if(incoming.trim().equals("NO DATA"))
-							{
-								System.out.println("Invalid PID");
-							} else {
 								s = incoming;
 								System.out.println("Received: " + s.trim());
 								interpreter.input_string(s.trim());
+						}
+						if(incoming.trim() == last_sent.trim())
+						{
+							try {
+								sendStringToComm("AT E0");
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 						}
-						else
-							System.out.println("Bad Data: " + incoming);
+						//}
+						//else
+							//System.out.println("Bad Data: " + incoming);
 					} catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
 					
 				}
 			});
-
 			try {
 				sendStringToComm("AT Z");
+				Thread.sleep(1);
+				sendStringToComm("AT E0");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -92,6 +103,7 @@ public class Serial_Port  {
 		} else
 		{
 			String new_command = command + "\r";
+			last_sent = command;
 			System.out.println("Sent: " + command);
 			comPort.writeBytes(new_command.getBytes(), new_command.length());
 		}

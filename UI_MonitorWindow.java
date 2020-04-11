@@ -1,5 +1,9 @@
 package car_data_logger;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -83,8 +87,8 @@ public class UI_MonitorWindow {
 		GridPane.setHalignment(lbl_fuel_level_value, HPos.CENTER);
 		GridPane.setHalignment(lbl_speed_value, HPos.CENTER);
 		GridPane.setHalignment(lbl_rpm_value, HPos.CENTER);
-
 	}
+	
 	
 	public Scene get_scene()
 	{
