@@ -1,3 +1,9 @@
+/*
+ * Aaron Liske
+ * Car Data Logger
+ * Enumeration class, with the data lookup values for the PIDs
+ */
+
 package car_data_logger;
 
 public class Data_Enumeration {

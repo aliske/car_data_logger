@@ -1,3 +1,9 @@
+/*
+ * Aaron Liske
+ * Car Data Logger
+ * "Monitor" Window Class using JavaFX
+ */
+
 package car_data_logger;
 
 import java.util.concurrent.Executors;

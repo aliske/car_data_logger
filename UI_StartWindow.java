@@ -1,3 +1,9 @@
+/*
+ * Aaron Liske
+ * Car Data Logger
+ * "Start" Window Class using JavaFX
+ */
+
 package car_data_logger;
 
 import javafx.event.ActionEvent;

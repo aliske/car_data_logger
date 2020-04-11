@@ -1,3 +1,12 @@
+/*
+ * Aaron Liske
+ * Car Data Logger
+ * Latest Revision: 4/11/2020
+ * 
+ * Puts the updater in a separate thread to avoid issues with
+ * getting data from the serial port listener thread
+ */
+
 package car_data_logger;
 
 import java.util.concurrent.Executors;
@@ -31,35 +40,38 @@ public class Main extends Application {
 	            @Override
 	            public void run() {
 	                Runnable updater = new Runnable() {
-	                	int command_count = 0;
 	                    @Override
 	                    public void run() {
+	                    	update_labels();
 	                    	try {
-	            	        	if(command_count == 0)
-	            	        		Serial_Port.sendStringToComm("01 2F 0C");
-	            	        		//Serial_Port.sendStringToComm("01 0C 0F");
-	            	        	else if(command_count == 1)
-	            	        		Serial_Port.sendStringToComm("01 0F 0D");
-	            	        	else if(command_count == 2)
-	            	        		Serial_Port.sendStringToComm("01 05 11");
-	            	        	command_count++;
-	            	        	if(command_count == 3)
-	            	        		command_count = 0;
-	            	        	UI_MonitorWindow.lbl_speed_value.setText(UI_Data_Store.speed);
-	            	        	UI_MonitorWindow.lbl_throttle_pos_value.setText(UI_Data_Store.throttle);
-	            	        	UI_MonitorWindow.lbl_fuel_level_value.setText(UI_Data_Store.fuel);
-	            	        	UI_MonitorWindow.lbl_intake_air_temp_value.setText(UI_Data_Store.intake_temp);
-	            	        	UI_MonitorWindow.lbl_rpm_value.setText(UI_Data_Store.rpm);
-	            	        	UI_MonitorWindow.lbl_coolant_temp_value.setText(UI_Data_Store.coolant_temp);
+	                    		//05: Coolant Temp
+	                    		//0C: Engine RPM
+	                    		//0D: Vehicle Speed
+	                    		//0F: Intake Air Temp
+	                    		//11: Throttle Position
+	                    		//2F: Fuel Level
+	                    		//5C: Oil Temp
+	                    		if(Serial_Port.ready_to_send)
+	                    			Serial_Port.sendStringToComm("01 11 05 0C 0D 0F 2F 5C");
 	            			} catch (Exception e) {
 	            				e.printStackTrace();
 	            			}
+	                    }
+	                    
+	                    private void update_labels() {
+	                    	UI_MonitorWindow.lbl_oil_temp_value.setText(UI_Data_Store.oil_temp);
+            	        	UI_MonitorWindow.lbl_speed_value.setText(UI_Data_Store.speed);
+            	        	UI_MonitorWindow.lbl_throttle_pos_value.setText(UI_Data_Store.throttle);
+            	        	UI_MonitorWindow.lbl_fuel_level_value.setText(UI_Data_Store.fuel);
+            	        	UI_MonitorWindow.lbl_intake_air_temp_value.setText(UI_Data_Store.intake_temp);
+            	        	UI_MonitorWindow.lbl_rpm_value.setText(UI_Data_Store.rpm);
+            	        	UI_MonitorWindow.lbl_coolant_temp_value.setText(UI_Data_Store.coolant_temp);
 	                    }
 	                };
 
 	                while (true) {
 	                    try {
-	                        Thread.sleep(1000);
+	                        Thread.sleep(500);
 	                    } catch (InterruptedException ex) {
 	                    }
 

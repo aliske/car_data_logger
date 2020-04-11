@@ -1,3 +1,11 @@
+/*
+ * Aaron Liske
+ * Car Data Logger
+ * Serial Port Class for ELM327 processor
+ * ELM327 data sheet for reference:
+ * https://www.elmelectronics.com/wp-content/uploads/2016/07/ELM327DS.pdf
+ */
+
 package car_data_logger;
 
 import com.fazecast.jSerialComm.SerialPort;
@@ -13,6 +21,7 @@ public class Serial_Port  {
 	static String last_sent = "";
 	static SerialPort comPort;
 	static int chosen_port = -1;
+	static Boolean ready_to_send = false;
 	static Interpreter interpreter = new Interpreter();
 	static String OS = System.getProperty("os.name").toLowerCase();
 
@@ -61,6 +70,10 @@ public class Serial_Port  {
 					String s = "";
 					try {
 						String incoming = new String(newData, "UTF-8");
+						if(incoming.trim().equals(">"))
+						{
+							ready_to_send = true;
+						}
 						if((!incoming.trim().equals(">")) && (incoming.endsWith("\n") || incoming.endsWith("\r")))
 						{
 								s = incoming;
@@ -102,10 +115,15 @@ public class Serial_Port  {
 			AlertBox.display("No Port", "Cannot send command \"" + command + "\".  No Port Found....");
 		} else
 		{
-			String new_command = command + "\r";
-			last_sent = command;
-			System.out.println("Sent: " + command);
-			comPort.writeBytes(new_command.getBytes(), new_command.length());
+			//Send only if ready OR if reset command
+			if(ready_to_send || command == "AT Z")
+			{
+				ready_to_send = false;
+				String new_command = command + "\r";
+				last_sent = command;
+				System.out.println("Sent: " + command);
+				comPort.writeBytes(new_command.getBytes(), new_command.length());
+			}
 		}
 	}
 

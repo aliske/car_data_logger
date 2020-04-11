@@ -1,3 +1,11 @@
+/*
+ * Aaron Liske
+ * Car Data Logger
+ * String interpreter for ELM327 OBDII responses
+ * ELM327 data sheet for reference:
+ * https://www.elmelectronics.com/wp-content/uploads/2016/07/ELM327DS.pdf
+ */
+
 package car_data_logger;
 
 import java.text.DecimalFormat;
