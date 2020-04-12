@@ -7,6 +7,8 @@
 
 package car_data_logger;
 
+import java.sql.Timestamp;
+
 public class UI_Data_Store {
 	static String rpm = "";
 	static String intake_temp = "";
@@ -15,4 +17,5 @@ public class UI_Data_Store {
 	static String speed = "";
 	static String throttle = "";
 	static String fuel = "";
+	static Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 }

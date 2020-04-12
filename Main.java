@@ -9,6 +9,7 @@
 
 package car_data_logger;
 
+import java.sql.Timestamp;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +36,6 @@ public class Main extends Application {
 		mainStage.setScene(scene_MainWindow);
 		mainStage.show();
 		Interpreter interpreter = new Interpreter();
-		interpreter.input_string("0111050C0D0F2F00E0:41112F05740C1:14100D000F3D2F2:73000000000000>");
 		if(sp.init())
 		{
 			Thread thread = new Thread(new Runnable() {
@@ -121,7 +121,6 @@ public class Main extends Application {
 	                    		UI_MonitorWindow.lbl_rpm_value.setTextFill(Color.web("#000000"));
 	                    		UI_MonitorWindow.lbl_rpm_value.setText(UI_Data_Store.rpm);
 	                    	}
-            	        	
             	        	
 	                    }
 	                };

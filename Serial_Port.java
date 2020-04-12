@@ -13,6 +13,7 @@ import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 
 import java.io.*;
+import java.sql.Timestamp;
 
 public class Serial_Port  {
 	static int baud_rate = 38400;
@@ -98,7 +99,7 @@ public class Serial_Port  {
 							
 							//System.out.println(final_response);
 							interpreter.input_string(final_response);
-							
+							UI_Data_Store.timestamp = new Timestamp(System.currentTimeMillis());
 						}
 						
 						//}
