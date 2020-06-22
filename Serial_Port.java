@@ -48,14 +48,14 @@ public class Serial_Port  {
 		}
 		if(chosen_port == -1)
 		{
-			UI_StartWindow.txt_port_used.setText("[PORT NOT FOUND]");
-			AlertBox.display("No Port", "Port " + port + " was not found");
+			//UI_StartWindow.txt_port_used.setText("[PORT NOT FOUND]");
+			//AlertBox.display("No Port", "Port " + port + " was not found");
 			System.out.println("Port Not Found....");
 			return false;
 		} else
 		{
 			comPort = SerialPort.getCommPorts()[chosen_port];
-			UI_StartWindow.txt_port_used.setText(port + " (" + comPort.getPortDescription() + ")");
+			//UI_StartWindow.txt_port_used.setText(port + " (" + comPort.getPortDescription() + ")");
 			comPort.setBaudRate(baud_rate);
 			comPort.setNumStopBits(1);
 			comPort.setNumDataBits(8);
@@ -126,7 +126,7 @@ public class Serial_Port  {
 		if(chosen_port == -1)
 		{
 			System.out.println("Cannot send command \"" + command + "\".  No Port Found....");
-			AlertBox.display("No Port", "Cannot send command \"" + command + "\".  No Port Found....");
+			//AlertBox.display("No Port", "Cannot send command \"" + command + "\".  No Port Found....");
 		} else
 		{
 			//Send only if ready OR if reset command
