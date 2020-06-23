@@ -17,6 +17,11 @@ public class Timer {
 		thread.start();
 	}
 	
+	public void reset(float seconds)
+	{
+		end_time = seconds;
+	}
+	
 	public void set_started()
 	{
 		started = true;
@@ -35,7 +40,6 @@ public class Timer {
                 try {
                 	if(end_time >= 0 && started == true)
                 	{
-                		System.out.println("thread running");
                 		if((end_time % 1) == 0)
             			{
             				label.setText(String.valueOf(end_time));

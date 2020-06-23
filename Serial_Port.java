@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 public class Serial_Port  {
 	static int baud_rate = 38400;
 	static String port = "ttyUSB0";
+	static Boolean selected = false;
 	static String last_received = "";
 	static String last_sent = "";
 	static SerialPort comPort;
@@ -29,19 +30,32 @@ public class Serial_Port  {
 	static Interpreter interpreter = new Interpreter();
 	static String OS = System.getProperty("os.name").toLowerCase();
 
+	public boolean query()
+	{
+		UI_Screen_Main.l1.clear();
+		for(int i = 0; i < SerialPort.getCommPorts().length; i++)
+		{
+			System.out.println(i + ": " + SerialPort.getCommPorts()[i].getSystemPortName());
+			UI_Screen_Main.l1.add(i, SerialPort.getCommPorts()[i].getSystemPortName());
+			if(SerialPort.getCommPorts()[i].getSystemPortName().equals(port))
+			{
+				chosen_port = i;
+			}
+		}
+		return true;
+	}
 	public boolean init() {
-		System.out.println("Querying Available Ports:");
-		if(OS.indexOf("win") >= 0)
+		
+		System.out.println("Attempting to start with " + port + " selected");
+		if(OS.indexOf("win") >= 0 && selected == false)
 		{
 			port = "COM3";
-		} else if (OS.indexOf("nix") >= 0)
+		} else if (OS.indexOf("nix") >= 0 && selected == false)
 		{
 			port = "ttyUSB0";
 		}
 		for(int i = 0; i < SerialPort.getCommPorts().length; i++)
 		{
-			System.out.println(i + ": " + SerialPort.getCommPorts()[i].getSystemPortName());
-			UI_Screen_Main.l1.add(i, SerialPort.getCommPorts()[i].getSystemPortName() + " : " + SerialPort.getCommPorts()[i].getPortDescription());
 			if(SerialPort.getCommPorts()[i].getSystemPortName().equals(port))
 			{
 				chosen_port = i;
@@ -49,7 +63,6 @@ public class Serial_Port  {
 		}
 		if(chosen_port == -1)
 		{
-			//UI_StartWindow.txt_port_used.setText("[PORT NOT FOUND]");
 			AlertBox.display("No Port", "Port " + port + " was not found");
 			System.out.println("Port Not Found....");
 			return false;
@@ -142,7 +155,7 @@ public class Serial_Port  {
 				response_lines[3] = "";
 				response_lines[4] = "";
 				count_responses=0;
-				System.out.println("Sent: " + command);
+				System.out.println("Sent [" + port + "]: " + command);
 				comPort.writeBytes(new_command.getBytes(), new_command.length());
 			}
 		}

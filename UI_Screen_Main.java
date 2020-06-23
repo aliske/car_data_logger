@@ -8,6 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 public class UI_Screen_Main {
@@ -21,7 +22,9 @@ public class UI_Screen_Main {
 	static JLabel database_name_label = new JLabel("Database Name:");
 	static JTextField database_name_text = new JTextField("obdii_data_logger");
 	static JLabel database_username_label = new JLabel("Database Username:");
+	static JTextField database_username_text = new JTextField("aliske");
 	static JLabel database_password_label = new JLabel("Database Password:");
+	static JPasswordField database_password_text = new JPasswordField("Tek05works");
 	static DefaultListModel<String> l1 = new DefaultListModel<>();
 	static JList<String> port_list = new JList<>(l1);
 	UI_Screen_Main() {
@@ -39,6 +42,12 @@ public class UI_Screen_Main {
 		database_name_label.setBounds(10,255,800,30);
 		database_name_text.setBounds(10,280,400,30);
 		
+		database_username_label.setBounds(10,310,800,30);
+		database_username_text.setBounds(10,335,400,30);
+		
+		database_password_label.setBounds(10,365,800,30);
+		database_password_text.setBounds(10,390,400,30);
+		
 		
 		timer_label.setBounds(725,430,75,50);
 
@@ -55,6 +64,10 @@ public class UI_Screen_Main {
 		f.add(database_host_text);
 		f.add(database_name_label);
 		f.add(database_name_text);
+		f.add(database_username_label);
+		f.add(database_username_text);
+		f.add(database_password_label);
+		f.add(database_password_text);
 		f.setSize(800,480);
 		f.setLayout(null);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

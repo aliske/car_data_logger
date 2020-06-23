@@ -9,38 +9,69 @@
 
 package car_data_logger;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 public class Main {
 	static Serial_Port sp = null;
+	static boolean started = false;
 	public static void main(String[] args) {
 		sp = new Serial_Port();
 		//launch(args);
 		
 		UI_Screen_Main.show();
 		Timer timer = new Timer(10,500,UI_Screen_Main.timer_label);
+		timer.set_started();
 		
+		UI_Screen_Main.port_list.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				AlertBox.display("New Port Chosen", UI_Screen_Main.port_list.getSelectedValue() + " Chosen as the Current Port");
+				sp.port = UI_Screen_Main.port_list.getSelectedValue();
+				sp.selected = true;
+				timer.reset(10);
+			}
+		});
+
 		Thread thread = new Thread(new Runnable() {
-		
-            @Override
-            public void run() {
-                Runnable updater = new Runnable() {
                     @Override
                     public void run() {
-                    	//update_labels();
-                    	try {
-                    		//05: Coolant Temp
-                    		//0C: Engine RPM
-                    		//0D: Vehicle Speed
-                    		//0F: Intake Air Temp
-                    		//11: Throttle Position
-                    		//2F: Fuel Level
-                    		//5C: Oil Temp
-                    		if(Serial_Port.started_polling == false)
-                    			Serial_Port.started_polling = true;
-                    		if(Serial_Port.ready_to_send)
-                    			Serial_Port.sendStringToComm("01 11 05 0C 0D 0F 2F");
-            			} catch (Exception e) {
-            				e.printStackTrace();
-            			}
+                    	update_labels();
+                    	while(true)
+                    	{
+	                    	try {
+	                    		if(timer.end_time <= 0)
+	                    		{
+	                    			if(started == false)
+	                    			{
+	                    				sp.init();
+	                    				started = true;
+	                    			}
+		                    		//05: Coolant Temp
+		                    		//0C: Engine RPM
+		                    		//0D: Vehicle Speed
+		                    		//0F: Intake Air Temp
+		                    		//11: Throttle Position
+		                    		//2F: Fuel Level
+		                    		//5C: Oil Temp
+		                    		if(Serial_Port.started_polling == false)
+		                    			Serial_Port.started_polling = true;
+		                    		if(Serial_Port.ready_to_send)
+		                    			Serial_Port.sendStringToComm("01 11 05 0C 0D 0F 2F");
+	                    		}
+	                    		else
+	                    		{
+	                    			System.out.println(String.valueOf(timer.end_time));
+	                    		}
+	                    		Thread.sleep(500);
+	            			} catch (Exception e) {
+	            				e.printStackTrace();
+	            			}
+	                    }
                     }
                     
                     private void update_labels() {
@@ -102,25 +133,16 @@ public class Main {
                     		UI_MonitorWindow.lbl_rpm_value.setTextFill(Color.web("#000000"));
                     		UI_MonitorWindow.lbl_rpm_value.setText(UI_Data_Store.rpm);
                     	}
-                    	*/
-                    }
-                };
-
-                while (true) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException ex) {
-                    }
                 }
-            }
+                */
+		            
+               }
         });
-
-		if(sp.init())
+		if(sp.query())
 		{
+			System.out.println("Done Querying");
 			thread.setDaemon(true);
-        	thread.start();
-        	timer.set_started();
+	        thread.start();
 		}
 	}
-	
 }
