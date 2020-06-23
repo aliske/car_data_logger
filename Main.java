@@ -11,13 +11,15 @@ package car_data_logger;
 
 public class Main {
 	static Serial_Port sp = null;
-	
 	public static void main(String[] args) {
 		sp = new Serial_Port();
 		//launch(args);
-
+		
+		UI_Screen_Main.show();
+		Timer timer = new Timer(10,500,UI_Screen_Main.timer_label);
+		
 		Thread thread = new Thread(new Runnable() {
-
+		
             @Override
             public void run() {
                 Runnable updater = new Runnable() {
@@ -101,7 +103,6 @@ public class Main {
                     		UI_MonitorWindow.lbl_rpm_value.setText(UI_Data_Store.rpm);
                     	}
                     	*/
-        	        	
                     }
                 };
 
@@ -110,17 +111,15 @@ public class Main {
                         Thread.sleep(500);
                     } catch (InterruptedException ex) {
                     }
-                    // UI update is run on the Application thread
-                    //Platform.runLater(updater);
                 }
             }
-
         });
-        // don't let thread prevent JVM shutdown
+
 		if(sp.init())
 		{
 			thread.setDaemon(true);
         	thread.start();
+        	timer.set_started();
 		}
 	}
 	

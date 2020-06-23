@@ -6,32 +6,32 @@
 
 package car_data_logger;
 
-import javafx.stage.*;
-import javafx.scene.*;
-import javafx.scene.layout.*;
-import javafx.scene.control.*;
-import javafx.geometry.*;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 public class AlertBox {
+	private static JDialog d;  
 	public static void display(String title, String message) {
-		Stage window = new Stage();
-		window.initModality(Modality.APPLICATION_MODAL);
-		window.setTitle(title);
-		window.setMinWidth(250);
-		
-		Label lbl_Message = new Label();
-		lbl_Message.setText(message);
-		
-		Button btn_Close = new Button("Close");
-		btn_Close.setOnAction(e -> window.close());
-		
-		VBox layout = new VBox(10);
-		layout.setPadding(new Insets(20,20,20,20));
-		layout.getChildren().addAll(lbl_Message, btn_Close);
-		layout.setAlignment(Pos.CENTER);
-		
-		Scene scene = new Scene(layout);
-		window.setScene(scene);
-		window.showAndWait();
+		JFrame f= new JFrame();  
+        d = new JDialog(f , title, true);  
+        d.setLayout( new GridLayout(2,1) );  
+        JButton b = new JButton ("OK");  
+        b.addActionListener ( new ActionListener()  
+        {  
+            public void actionPerformed( ActionEvent e )  
+            {  
+                AlertBox.d.setVisible(false);  
+            }  
+        });  
+        d.add( new JLabel (message));  
+        d.add(b);   
+        d.setSize(300,150);    
+        d.setVisible(true);  
 	}
 }

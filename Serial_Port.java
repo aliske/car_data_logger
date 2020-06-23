@@ -41,6 +41,7 @@ public class Serial_Port  {
 		for(int i = 0; i < SerialPort.getCommPorts().length; i++)
 		{
 			System.out.println(i + ": " + SerialPort.getCommPorts()[i].getSystemPortName());
+			UI_Screen_Main.l1.add(i, SerialPort.getCommPorts()[i].getSystemPortName() + " : " + SerialPort.getCommPorts()[i].getPortDescription());
 			if(SerialPort.getCommPorts()[i].getSystemPortName().equals(port))
 			{
 				chosen_port = i;
@@ -49,7 +50,7 @@ public class Serial_Port  {
 		if(chosen_port == -1)
 		{
 			//UI_StartWindow.txt_port_used.setText("[PORT NOT FOUND]");
-			//AlertBox.display("No Port", "Port " + port + " was not found");
+			AlertBox.display("No Port", "Port " + port + " was not found");
 			System.out.println("Port Not Found....");
 			return false;
 		} else
