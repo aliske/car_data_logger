@@ -11,7 +11,7 @@ public class Mysql_Connector {
 	private Statement statement = null;
 	private PreparedStatement preparedStatement = null;
 	
-	public void connect() {
+	public boolean connect() {
 		try {
 
 			@SuppressWarnings("deprecation")
@@ -26,7 +26,9 @@ public class Mysql_Connector {
 				AlertBox.display("MySQL Error", "Invalid Host");
 			else
 				AlertBox.display("MySQL Error", e.toString());
+			return false;
 		}
+		return true;
 	}
 	
 	public void close() {

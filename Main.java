@@ -46,7 +46,10 @@ public class Main {
 	                    			if(started == false)
 	                    			{
 	                    				sp.init();
-	                    				mysql.connect();
+	                    				if(mysql.connect())
+	                    					System.out.println("MySQL Connected");
+	                    				else
+	                    					System.out.println("MySQL Failed to Connect");
 	                    				started = true;
 	                    			}
 		                    		//05: Coolant Temp

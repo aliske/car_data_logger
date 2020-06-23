@@ -22,9 +22,9 @@ public class UI_Screen_Main {
 	static JLabel database_name_label = new JLabel("Database Name:");
 	static JTextField database_name_text = new JTextField("obdii_data_logger");
 	static JLabel database_username_label = new JLabel("Database Username:");
-	static JTextField database_username_text = new JTextField("aliske");
+	static JTextField database_username_text = new JTextField("");
 	static JLabel database_password_label = new JLabel("Database Password:");
-	static JPasswordField database_password_text = new JPasswordField("Tek05works");
+	static JPasswordField database_password_text = new JPasswordField("");
 	static DefaultListModel<String> l1 = new DefaultListModel<>();
 	static JList<String> port_list = new JList<>(l1);
 	UI_Screen_Main() {
