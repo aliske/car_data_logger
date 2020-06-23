@@ -31,7 +31,7 @@ public class AlertBox {
         });  
         d.add( new JLabel (message));  
         d.add(b);   
-        d.setSize(300,150);    
+        d.setSize(750,150);    
         d.setVisible(true);  
 	}
 }

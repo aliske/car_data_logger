@@ -9,15 +9,13 @@
 
 package car_data_logger;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 public class Main {
 	static Serial_Port sp = null;
 	static boolean started = false;
+	static Mysql_Connector mysql = new Mysql_Connector();
 	public static void main(String[] args) {
 		sp = new Serial_Port();
 		//launch(args);
@@ -29,10 +27,9 @@ public class Main {
 		UI_Screen_Main.port_list.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent arg0) {
-				// TODO Auto-generated method stub
 				AlertBox.display("New Port Chosen", UI_Screen_Main.port_list.getSelectedValue() + " Chosen as the Current Port");
-				sp.port = UI_Screen_Main.port_list.getSelectedValue();
-				sp.selected = true;
+				Serial_Port.port = UI_Screen_Main.port_list.getSelectedValue();
+				Serial_Port.selected = true;
 				timer.reset(10);
 			}
 		});
@@ -49,6 +46,7 @@ public class Main {
 	                    			if(started == false)
 	                    			{
 	                    				sp.init();
+	                    				mysql.connect();
 	                    				started = true;
 	                    			}
 		                    		//05: Coolant Temp

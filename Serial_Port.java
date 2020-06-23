@@ -46,7 +46,7 @@ public class Serial_Port  {
 	}
 	public boolean init() {
 		
-		System.out.println("Attempting to start with " + port + " selected");
+		
 		if(OS.indexOf("win") >= 0 && selected == false)
 		{
 			port = "COM3";
@@ -54,6 +54,7 @@ public class Serial_Port  {
 		{
 			port = "ttyUSB0";
 		}
+		System.out.println("Attempting to start with " + port + " selected");
 		for(int i = 0; i < SerialPort.getCommPorts().length; i++)
 		{
 			if(SerialPort.getCommPorts()[i].getSystemPortName().equals(port))
@@ -85,8 +86,10 @@ public class Serial_Port  {
 						return;
 					byte[] newData = new byte[comPort.bytesAvailable()];
 					
+					@SuppressWarnings("unused")
 					int bytes_read = comPort.readBytes(newData, newData.length);
 					
+					@SuppressWarnings("unused")
 					String s = "";
 					try {
 						String incoming = new String(newData, "UTF-8");
@@ -162,6 +165,7 @@ public class Serial_Port  {
 	}
 
 
+	@SuppressWarnings("static-access")
 	public void set_port(String port)
 	{
 		this.port = port;

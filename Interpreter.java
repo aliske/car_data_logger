@@ -101,8 +101,11 @@ public class Interpreter {
 		System.out.println("PID: " + pid + " " + A + " " + B + " " + C + " " + D + " " + E);
 		int valueA = -1;
 		int valueB = -1;
+		@SuppressWarnings("unused")
 		int valueC = -1;
+		@SuppressWarnings("unused")
 		int valueD = -1;
+		@SuppressWarnings("unused")
 		int valueE = -1;
 		double result = -1;
 		if(! A.isEmpty())
