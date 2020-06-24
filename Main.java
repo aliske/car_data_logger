@@ -21,6 +21,8 @@ public class Main {
 		//launch(args);
 		
 		UI_Screen_Main.show();
+		Config_File config = new Config_File();
+		config.attempt_read();
 		Timer timer = new Timer(10,500,UI_Screen_Main.timer_label);
 		timer.set_started();
 		
@@ -47,7 +49,11 @@ public class Main {
 	                    			{
 	                    				sp.init();
 	                    				if(mysql.connect())
+	                    				{
 	                    					System.out.println("MySQL Connected");
+	                    					Config_File config = new Config_File();
+	                    					config.attempt_write(UI_Screen_Main.database_host_text.getText(), UI_Screen_Main.database_name_text.getText(), UI_Screen_Main.database_username_text.getText(), UI_Screen_Main.database_password_text.getText());
+	                    				}
 	                    				else
 	                    					System.out.println("MySQL Failed to Connect");
 	                    				started = true;

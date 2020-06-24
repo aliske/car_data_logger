@@ -45,6 +45,8 @@ public class Timer {
             				label.setText(String.valueOf(end_time));
             			}
                 		end_time -= (step_size / 1000f);
+                	} else {
+                		started = false;
                 	}
                 	Thread.sleep(step_size);
                 } catch (InterruptedException ex) {
