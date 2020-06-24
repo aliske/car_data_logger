@@ -23,6 +23,7 @@ public class Main {
 		UI_Screen_Main.show();
 		Config_File config = new Config_File();
 		config.attempt_read();
+		UI_Screen_Main.selected_port_label.setText("Currently Using Port: " + sp.port);
 		Timer timer = new Timer(10,500,UI_Screen_Main.timer_label);
 		timer.set_started();
 		
@@ -32,31 +33,41 @@ public class Main {
 				AlertBox.display("New Port Chosen", UI_Screen_Main.port_list.getSelectedValue() + " Chosen as the Current Port");
 				Serial_Port.port = UI_Screen_Main.port_list.getSelectedValue();
 				Serial_Port.selected = true;
+				UI_Screen_Main.selected_port_label.setText("Currently Using Port: " + sp.port);
 				timer.reset(10);
+				started = false;
 			}
 		});
 
 		Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
+                    	
                     	update_labels();
                     	while(true)
                     	{
+                    		System.out.println(String.valueOf(timer.end_time));
 	                    	try {
-	                    		if(timer.end_time <= 0)
+	                    		if(timer.end_time < 0)
 	                    		{
 	                    			if(started == false)
 	                    			{
-	                    				sp.init();
-	                    				if(mysql.connect())
-	                    				{
-	                    					System.out.println("MySQL Connected");
-	                    					Config_File config = new Config_File();
-	                    					config.attempt_write(UI_Screen_Main.database_host_text.getText(), UI_Screen_Main.database_name_text.getText(), UI_Screen_Main.database_username_text.getText(), UI_Screen_Main.database_password_text.getText());
+	                    				UI_Screen_Main.port_list.setEnabled(false);
+	                    				UI_Screen_Main.database_host_text.setEnabled(false);
+	                    				UI_Screen_Main.database_name_text.setEnabled(false);
+	                    				UI_Screen_Main.database_username_text.setEnabled(false);
+	                    				UI_Screen_Main.database_password_text.setEnabled(false);
+	                    				if(sp.init()) {
+		                    				if(mysql.connect())
+		                    				{
+		                    					System.out.println("MySQL Connected");
+		                    					Config_File config = new Config_File();
+		                    					config.attempt_write(UI_Screen_Main.database_host_text.getText(), UI_Screen_Main.database_name_text.getText(), UI_Screen_Main.database_username_text.getText(), UI_Screen_Main.database_password_text.getText());
+		                    				}
+		                    				else
+		                    					System.out.println("MySQL Failed to Connect");
+		                    				started = true;
 	                    				}
-	                    				else
-	                    					System.out.println("MySQL Failed to Connect");
-	                    				started = true;
 	                    			}
 		                    		//05: Coolant Temp
 		                    		//0C: Engine RPM
@@ -72,9 +83,9 @@ public class Main {
 	                    		}
 	                    		else
 	                    		{
-	                    			System.out.println(String.valueOf(timer.end_time));
+	                    			//System.out.println(String.valueOf(timer.end_time));
 	                    		}
-	                    		Thread.sleep(500);
+	                    		Thread.sleep(200);
 	            			} catch (Exception e) {
 	            				e.printStackTrace();
 	            			}

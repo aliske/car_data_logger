@@ -18,6 +18,7 @@ public class UI_Screen_Main {
 	static JLabel ports_label = new JLabel("Queried Ports:");
 	static JLabel timer_label = new JLabel("999");
 	static JLabel database_host_label = new JLabel("Database Host:");
+	static JLabel selected_port_label = new JLabel("Currently Using Port: ");
 	static JTextField database_host_text = new JTextField("localhost");
 	static JLabel database_name_label = new JLabel("Database Name:");
 	static JTextField database_name_text = new JTextField("obdii_data_logger");
@@ -34,19 +35,21 @@ public class UI_Screen_Main {
 	public static void show() {
 		main_label.setBounds(10,10,800, 30);
 		ports_label.setBounds(10,60,800,24);
-		port_list.setBounds(10,80,400,100);
+		port_list.setBounds(10,80,780,100);
+		
+		selected_port_label.setBounds(10,180,800,30);
 		
 		database_host_label.setBounds(10,200,800,30);
-		database_host_text.setBounds(10,225,400,30);
+		database_host_text.setBounds(10,225,780,30);
 		
 		database_name_label.setBounds(10,255,800,30);
-		database_name_text.setBounds(10,280,400,30);
+		database_name_text.setBounds(10,280,780,30);
 		
-		database_username_label.setBounds(10,310,800,30);
-		database_username_text.setBounds(10,335,400,30);
+		database_username_label.setBounds(10,310,790,30);
+		database_username_text.setBounds(10,335,780,30);
 		
 		database_password_label.setBounds(10,365,800,30);
-		database_password_text.setBounds(10,390,400,30);
+		database_password_text.setBounds(10,390,780,30);
 		
 		
 		timer_label.setBounds(725,430,75,50);
@@ -68,6 +71,7 @@ public class UI_Screen_Main {
 		f.add(database_username_text);
 		f.add(database_password_label);
 		f.add(database_password_text);
+		f.add(selected_port_label);
 		f.setSize(800,480);
 		f.setLayout(null);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

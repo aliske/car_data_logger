@@ -20,6 +20,7 @@ public class Timer {
 	public void reset(float seconds)
 	{
 		end_time = seconds;
+		started = true;
 	}
 	
 	public void set_started()
