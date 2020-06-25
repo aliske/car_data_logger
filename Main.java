@@ -14,6 +14,12 @@ import java.awt.Color;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinAnalogInput;
+import com.pi4j.io.gpio.GpioPinDigitalInput;
+import com.pi4j.io.gpio.RaspiPin;
+
 public class Main {
 	static Serial_Port sp = null;
 	static boolean started = false;
@@ -24,6 +30,16 @@ public class Main {
 		//launch(args);
 		
 		UI_Screen_Main.show();
+		String OS = System.getProperty("os.name").toLowerCase();
+		if (OS.indexOf("nix") >= 0)
+		{
+			GpioController gpio = GpioFactory.getInstance();
+			GpioPinDigitalInput inputPin = gpio.provisionDigitalInputPin(RaspiPin.GPIO_01);
+			UI_Screen_Main.gpio_label.setVisible(true);
+		} else if(OS.indexOf("win") >= 0) {
+			UI_Screen_Main.gpio_label.setVisible(false);
+		}
+		
 		Config_File config = new Config_File();
 		config.attempt_read();
 		UI_Screen_Main.selected_port_label.setText("Currently Using Port: " + sp.port);
@@ -161,7 +177,6 @@ public class Main {
                     		UI_Screen_Monitor.rpm_value_label.setText(UI_Data_Store.rpm);
                     	}
                 }
-
         });
 		if(sp.query_ports())
 		{

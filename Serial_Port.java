@@ -144,7 +144,6 @@ public class Serial_Port  {
 	        @Override
 	        public void run() {
 	            while (true && (starting_stage==0 || starting_stage==1)) {
-	            	System.out.println(starting_stage);
 	                try {
 	                	try {
 	                		
