@@ -163,7 +163,7 @@ public class Main {
                 }
 
         });
-		if(sp.query())
+		if(sp.query_ports())
 		{
 			System.out.println("Done Querying");
 			thread.setDaemon(true);

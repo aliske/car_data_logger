@@ -29,8 +29,9 @@ public class Serial_Port  {
 	static Boolean started_polling = false;
 	static Interpreter interpreter = new Interpreter();
 	static String OS = System.getProperty("os.name").toLowerCase();
+	static int starting_stage = 0;
 
-	public boolean query()
+	public boolean query_ports()
 	{
 		UI_Screen_Main.l1.clear();
 		for(int i = 0; i < SerialPort.getCommPorts().length; i++)
@@ -44,6 +45,7 @@ public class Serial_Port  {
 		}
 		return true;
 	}
+	
 	public boolean init() {
 		
 		
@@ -96,7 +98,12 @@ public class Serial_Port  {
 						//System.out.print(incoming);
 						if(incoming.trim().endsWith(">"))
 						{
-							ready_to_send = true;
+							if(starting_stage == 0)
+								starting_stage = 1;
+							else if(starting_stage == 1)
+								starting_stage = 2;
+							else
+								ready_to_send = true;
 						}
 						if(incoming.indexOf("\n") >=0 || incoming.indexOf("\r") >= 0 && started_polling)
 						{
@@ -118,7 +125,6 @@ public class Serial_Port  {
 							interpreter.input_string(final_response);
 							UI_Data_Store.timestamp = new Timestamp(System.currentTimeMillis());
 						}
-						
 						//}
 						//else
 							//System.out.println("Bad Data: " + incoming);
@@ -128,15 +134,35 @@ public class Serial_Port  {
 					
 				}
 			});
-			try {
-				sendStringToComm("AT Z");
-				Thread.sleep(1);
-				sendStringToComm("AT E0");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			serial_stage();
 			return true;
 		}
+	}
+	
+	private void serial_stage() {
+		Thread thread = new Thread(new Runnable() {
+	        @Override
+	        public void run() {
+	            while (true && (starting_stage==0 || starting_stage==1)) {
+	            	System.out.println(starting_stage);
+	                try {
+	                	try {
+	                		
+	                		if(starting_stage == 0)
+	                			sendStringToComm("AT Z");
+	                		else if(starting_stage == 1)
+	                			sendStringToComm("AT E0");
+	        			} catch (Exception e) {
+	        				e.printStackTrace();
+	        			}
+	                	Thread.sleep(2000);
+	                } catch (InterruptedException ex) {
+	                }
+	            }
+	        }
+
+	    });
+		thread.start();
 	}
 
 	static void sendStringToComm(String command) throws Exception {
@@ -147,7 +173,7 @@ public class Serial_Port  {
 		} else
 		{
 			//Send only if ready OR if reset command
-			if(ready_to_send || command == "AT Z")
+			if(ready_to_send || command == "AT Z" || command == "AT E0")
 			{
 				ready_to_send = false;
 				String new_command = command + "\r";
