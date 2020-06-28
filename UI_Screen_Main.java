@@ -23,7 +23,7 @@ public class UI_Screen_Main {
 	static JLabel database_name_label = new JLabel("Database Name:");
 	static JTextField database_name_text = new JTextField("obdii_data_logger");
 	static JLabel database_username_label = new JLabel("Database Username:");
-	static JTextField database_username_text = new JTextField("");
+	static JTextField database_username_text = new JTextField("aliske");
 	static JLabel database_password_label = new JLabel("Database Password:");
 	static JLabel gpio_label = new JLabel("GPIO Header Found on Board");
 	static JPasswordField database_password_text = new JPasswordField("");
@@ -69,7 +69,7 @@ public class UI_Screen_Main {
 		f.add(database_password_text);
 		f.add(gpio_label);
 		f.add(selected_port_label);
-		f.setSize(800,480);
+		f.setSize(675,400);
 		f.setLayout(null);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setUndecorated(true);

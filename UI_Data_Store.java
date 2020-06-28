@@ -18,4 +18,5 @@ public class UI_Data_Store {
 	static String throttle = "";
 	static String fuel = "";
 	static Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+	static String current_data = "";
 }

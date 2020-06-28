@@ -62,11 +62,35 @@ public class Main {
                     @Override
                     public void run() {
 
-                    	
-                    	
+                
                     	while(true)
                     	{
-                    		update_labels();
+                    		if(started == true) {
+                				//System.out.println("started");
+	                    		//05: Coolant Temp
+	                    		//0C: Engine RPM
+	                    		//0D: Vehicle Speed
+	                    		//0F: Intake Air Temp
+	                    		//11: Throttle Position
+	                    		//2F: Fuel Level
+	                    		//5C: Oil Temp
+                    			
+	                    		if(Serial_Port.started_polling == false)
+	                    			Serial_Port.started_polling = true;
+	                    		if(Serial_Port.ready_to_send)
+	                    		{
+									try {
+											Serial_Port.sendStringToComm("01 45 05 0C 0D 0F 2F");
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+	                    		}
+                			}
+                    		else
+                    		{
+                    			//System.out.println("Not started");
+                    		}
                     		//System.out.println(String.valueOf(timer.end_time));
 	                    	try {
 	                    		if(timer.end_time < 0)
@@ -78,106 +102,115 @@ public class Main {
 	                    				UI_Screen_Main.database_name_text.setEnabled(false);
 	                    				UI_Screen_Main.database_username_text.setEnabled(false);
 	                    				UI_Screen_Main.database_password_text.setEnabled(false);
+	                    				started = true;
 	                    				if(UI_Screen_Monitor.displayed == false)
 	                    					UI_Screen_Monitor.show();
-	                    				if(sp.init()) {
-		                    				if(mysql.connect())
-		                    				{
-		                    					System.out.println("MySQL Connected");
-		                    					Config_File config = new Config_File();
-		                    					config.attempt_write(UI_Screen_Main.database_host_text.getText(), UI_Screen_Main.database_name_text.getText(), UI_Screen_Main.database_username_text.getText(), UI_Screen_Main.database_password_text.getText());
-		                    				}
-		                    				else
-		                    					System.out.println("MySQL Failed to Connect");
-	                    				}
+	                    				initialize();
 	                    				
-	                    				started = true;
+	                    				System.out.println("Past init");
+	                    				if(mysql.connect())
+	                    				{
+	                    					System.out.println("MySQL Connected");
+	                    					Config_File config = new Config_File();
+	                    					config.attempt_write(UI_Screen_Main.database_host_text.getText(), UI_Screen_Main.database_name_text.getText(), UI_Screen_Main.database_username_text.getText(), UI_Screen_Main.database_password_text.getText());
+	                    				}
+	                    				else
+	                    					System.out.println("MySQL Failed to Connect");
+	                    				
 	                    			}
-	                    			if(started == true) {
-			                    		//05: Coolant Temp
-			                    		//0C: Engine RPM
-			                    		//0D: Vehicle Speed
-			                    		//0F: Intake Air Temp
-			                    		//11: Throttle Position
-			                    		//2F: Fuel Level
-			                    		//5C: Oil Temp
-			                    		if(Serial_Port.started_polling == false)
-			                    			Serial_Port.started_polling = true;
-			                    		if(Serial_Port.ready_to_send)
-			                    			Serial_Port.sendStringToComm("01 11 05 0C 0D 0F 2F");
-	                    			}
+	                    			
 	                    		}
 	                    		else
 	                    		{
 	                    			//System.out.println(String.valueOf(timer.end_time));
 	                    		}
-	                    		Thread.sleep(200);
+	                    		Thread.sleep(250);
 	            			} catch (Exception e) {
 	            				e.printStackTrace();
 	            			}
 	                    }
                     }
+                    private void initialize() {
+                    	sp.init();
+                    }
                     
-                    private void update_labels() {
-                    	if(UI_Data_Store.oil_temp.equals(""))
-                    	{
-                    		UI_Screen_Monitor.oil_value_label.setForeground(Color.red);
-                    		UI_Screen_Monitor.oil_value_label.setText("N/A");
-                    	} else {
-                    		UI_Screen_Monitor.oil_value_label.setForeground(Color.white);
-                    		UI_Screen_Monitor.oil_value_label.setText(UI_Data_Store.oil_temp);
-                    	}
-                    	if(UI_Data_Store.coolant_temp.equals(""))
-                    	{
-                    		UI_Screen_Monitor.coolant_value_label.setForeground(Color.red);
-                    		UI_Screen_Monitor.coolant_value_label.setText("N/A");
-                    	} else {
-                    		UI_Screen_Monitor.coolant_value_label.setForeground(Color.white);
-                    		UI_Screen_Monitor.coolant_value_label.setText(UI_Data_Store.coolant_temp);
-                    	}
-                    	if(UI_Data_Store.speed.equals(""))
-                    	{
-                    		UI_Screen_Monitor.speed_value_label.setForeground(Color.red);
-                    		UI_Screen_Monitor.speed_value_label.setText("N/A");
-                    	} else {
-                    		UI_Screen_Monitor.speed_value_label.setForeground(Color.white);
-                    		UI_Screen_Monitor.speed_value_label.setText(UI_Data_Store.speed);
-                    	}
-                    	if(UI_Data_Store.throttle.equals(""))
-                    	{
-                    		UI_Screen_Monitor.throttle_value_label.setForeground(Color.red);
-                    		UI_Screen_Monitor.throttle_value_label.setText("N/A");
-                    	} else {
-                    		UI_Screen_Monitor.throttle_value_label.setForeground(Color.white);
-                    		UI_Screen_Monitor.throttle_value_label.setText(UI_Data_Store.throttle);
-                    	}
-                    	if(UI_Data_Store.fuel.equals(""))
-                    	{
-                    		UI_Screen_Monitor.fuel_value_label.setForeground(Color.red);
-                    		UI_Screen_Monitor.fuel_value_label.setText("N/A");
-                    	} else {
-                    		UI_Screen_Monitor.fuel_value_label.setForeground(Color.white);
-                    		UI_Screen_Monitor.fuel_value_label.setText(UI_Data_Store.fuel);
-                    	}
-        	        	
-                    	if(UI_Data_Store.intake_temp.equals(""))
-                    	{
-                    		UI_Screen_Monitor.intake_value_label.setForeground(Color.red);
-                    		UI_Screen_Monitor.intake_value_label.setText("N/A");
-                    	} else {
-                    		UI_Screen_Monitor.intake_value_label.setForeground(Color.white);
-                    		UI_Screen_Monitor.intake_value_label.setText(UI_Data_Store.intake_temp);
-                    	}
-                    	if(UI_Data_Store.rpm.equals(""))
-                    	{
-                    		UI_Screen_Monitor.rpm_value_label.setForeground(Color.red);
-                    		UI_Screen_Monitor.rpm_value_label.setText("N/A");
-                    	} else {
-                    		UI_Screen_Monitor.rpm_value_label.setForeground(Color.white);
-                    		UI_Screen_Monitor.rpm_value_label.setText(UI_Data_Store.rpm);
-                    	}
-                }
+                    
         });
+		
+		
+		Thread thread_interpretter = new Thread(new Runnable() {
+			Interpreter interpreter = new Interpreter();
+            @Override
+            public void run() {
+            	while(true)
+            	{
+            		try {
+            			System.out.println("Current Data: " + UI_Data_Store.current_data);
+            			update_labels();
+            			if(UI_Data_Store.current_data != "")
+            			{
+            				interpreter.input_string(UI_Data_Store.current_data);
+            			}
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                }
+            }
+            private void update_labels() {
+            	if(UI_Data_Store.coolant_temp.equals(""))
+            	{
+            		UI_Screen_Monitor.coolant_value_label.setForeground(Color.red);
+            		UI_Screen_Monitor.coolant_value_label.setText("N/A");
+            	} else {
+            		UI_Screen_Monitor.coolant_value_label.setForeground(Color.white);
+            		UI_Screen_Monitor.coolant_value_label.setText(UI_Data_Store.coolant_temp);
+            	}
+            	if(UI_Data_Store.speed.equals(""))
+            	{
+            		UI_Screen_Monitor.speed_value_label.setForeground(Color.red);
+            		UI_Screen_Monitor.speed_value_label.setText("N/A");
+            	} else {
+            		UI_Screen_Monitor.speed_value_label.setForeground(Color.white);
+            		UI_Screen_Monitor.speed_value_label.setText(UI_Data_Store.speed);
+            	}
+            	if(UI_Data_Store.throttle.equals(""))
+            	{
+            		UI_Screen_Monitor.throttle_value_label.setForeground(Color.red);
+            		UI_Screen_Monitor.throttle_value_label.setText("N/A");
+            	} else {
+            		UI_Screen_Monitor.throttle_value_label.setForeground(Color.white);
+            		UI_Screen_Monitor.throttle_value_label.setText(UI_Data_Store.throttle);
+            	}
+            	if(UI_Data_Store.fuel.equals(""))
+            	{
+            		UI_Screen_Monitor.fuel_value_label.setForeground(Color.red);
+            		UI_Screen_Monitor.fuel_value_label.setText("N/A");
+            	} else {
+            		UI_Screen_Monitor.fuel_value_label.setForeground(Color.white);
+            		UI_Screen_Monitor.fuel_value_label.setText(UI_Data_Store.fuel);
+            	}
+	        	
+            	if(UI_Data_Store.intake_temp.equals(""))
+            	{
+            		UI_Screen_Monitor.intake_value_label.setForeground(Color.red);
+            		UI_Screen_Monitor.intake_value_label.setText("N/A");
+            	} else {
+            		UI_Screen_Monitor.intake_value_label.setForeground(Color.white);
+            		UI_Screen_Monitor.intake_value_label.setText(UI_Data_Store.intake_temp);
+            	}
+            	if(UI_Data_Store.rpm.equals(""))
+            	{
+            		UI_Screen_Monitor.rpm_value_label.setForeground(Color.red);
+            		UI_Screen_Monitor.rpm_value_label.setText("N/A");
+            	} else {
+            		UI_Screen_Monitor.rpm_value_label.setForeground(Color.white);
+            		UI_Screen_Monitor.rpm_value_label.setText(UI_Data_Store.rpm);
+            	}
+        }
+		});
+		thread_interpretter.start();
 		if(sp.query_ports())
 		{
 			System.out.println("Done Querying");

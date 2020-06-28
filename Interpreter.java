@@ -12,7 +12,7 @@ import java.text.DecimalFormat;
 
 public class Interpreter {
 	DecimalFormat df = new DecimalFormat("###.##");
-	String output_format = "yyyyyyyyyyyyyyyyyyyxx xx xx xx xx xxyy xx xx xx xx xx xx xxyy xxyyyyyyyyyyyy";
+	String output_format = "yyyyyxx xx xx xx xx xxyy xx xx xx xx xx xx xxyy xxyyyyyyyyyyyy";
 	
 	static Data_Enumeration enumerator = new Data_Enumeration();
 	Interpreter()
@@ -43,57 +43,64 @@ public class Interpreter {
 	}
 	
 	public void input_string(String data) {
-		String new_data = input_formatter(data);
-		int service = -1;
-		int pid = -1;
-		String pid_hex = "00";
-		String[] pid_parts = {"00","00","00","00","00"};
-		int parts_count = 0;
-		String[] parts = new_data.split(" ");
-		if(parts[0].startsWith("4")) {
-			service = Integer.parseInt(parts[0]) - 40;
-			int counter = 0;
-			for(int i = 1; i < parts.length; i++)
-			{
-				System.out.println(parts[i]);
-				if(counter == 0)
+		if(data.length() == 49)
+		{
+			System.out.println("Curr Data: " + data);
+			String new_data = input_formatter(data);
+			Mysql_Connector mysql = new Mysql_Connector();
+			mysql.save_data(data);
+			int service = -1;
+			int pid = -1;
+			String pid_hex = "00";
+			String[] pid_parts = {"00","00","00","00","00"};
+			int parts_count = 0;
+			String[] parts = new_data.split(" ");
+			if(parts[0].startsWith("4")) {
+				service = Integer.parseInt(parts[0]) - 40;
+				int counter = 0;
+				for(int i = 1; i < parts.length; i++)
 				{
-					pid_hex = parts[i];
-					//System.out.println("PID Hex: " + pid_hex);
-					pid = Integer.parseInt(parts[i], 16);
-					//System.out.println("PID: " + pid);
-					pid_parts[0]="00";
-					pid_parts[1]="00";
-					pid_parts[2]="00";
-					pid_parts[3]="00";
-					pid_parts[4]="00";
-					
-					if(service == 1)
+					System.out.println(parts[i]);
+					if(counter == 0)
 					{
-						counter = Data_Enumeration.bytes_returned_1[pid];
-						System.out.println("Bytes Expected: " + counter);
-					}
-					else if(service == 5)
+						pid_hex = parts[i];
+						//System.out.println("PID Hex: " + pid_hex);
+						pid = Integer.parseInt(parts[i], 16);
+						//System.out.println("PID: " + pid);
+						pid_parts[0]="00";
+						pid_parts[1]="00";
+						pid_parts[2]="00";
+						pid_parts[3]="00";
+						pid_parts[4]="00";
+						
+						if(service == 1)
+						{
+							counter = Data_Enumeration.bytes_returned_1[pid];
+							System.out.println("Bytes Expected: " + counter);
+						}
+						else if(service == 5)
+						{
+							counter = Data_Enumeration.bytes_returned_5[pid];
+						}
+						else if(service == 9)
+						{
+							counter = Data_Enumeration.bytes_returned_9[pid];
+						}
+						
+						parts_count = counter;
+					} else if (counter == 1)
 					{
-						counter = Data_Enumeration.bytes_returned_5[pid];
+						pid_parts[parts_count - counter] = parts[i];
+						standard_processor(pid_parts[0], pid_parts[1], pid_parts[2], pid_parts[3], pid_parts[4], service, pid_hex);
+						counter--;
+					} else {
+						pid_parts[parts_count - counter] = parts[i];
+						counter--;
 					}
-					else if(service == 9)
-					{
-						counter = Data_Enumeration.bytes_returned_9[pid];
-					}
-					
-					parts_count = counter;
-				} else if (counter == 1)
-				{
-					pid_parts[parts_count - counter] = parts[i];
-					standard_processor(pid_parts[0], pid_parts[1], pid_parts[2], pid_parts[3], pid_parts[4], service, pid_hex);
-					counter--;
-				} else {
-					pid_parts[parts_count - counter] = parts[i];
-					counter--;
 				}
 			}
 		}
+		UI_Data_Store.current_data = "";
 	}
 	
 	public void standard_processor(String A, String B, String C, String D, String E, int service, String pid)
@@ -183,7 +190,7 @@ public class Interpreter {
 				result = (double) valueA - 40;
 				UI_Data_Store.intake_temp = df.format(result) + " C";
 			}
-			else if(pid.equals("11")) 			//Throttle Position
+			else if(pid.equals("45")) 			//Throttle Position
 			{
 				result = (double) valueA / 2.55;
 				UI_Data_Store.throttle = df.format(result) + "%";

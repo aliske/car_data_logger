@@ -24,7 +24,7 @@ public class Serial_Port  {
 	static SerialPort comPort;
 	static int chosen_port = -1;
 	static int count_responses = 0;
-	static String[] response_lines = {"", "", "", "", ""};
+	static String[] response_lines = {"","","","","","","","","","","",""};
 	static Boolean ready_to_send = false;
 	static Boolean started_polling = false;
 	static Interpreter interpreter = new Interpreter();
@@ -46,8 +46,7 @@ public class Serial_Port  {
 		return true;
 	}
 	
-	public boolean init() {
-		
+	public void init() {
 		
 		if(OS.indexOf("win") >= 0 && selected == false)
 		{
@@ -68,7 +67,6 @@ public class Serial_Port  {
 		{
 			AlertBox.display("No Port", "Port " + port + " was not found");
 			System.out.println("Port Not Found....");
-			return false;
 		} else
 		{
 			comPort = SerialPort.getCommPorts()[chosen_port];
@@ -88,46 +86,66 @@ public class Serial_Port  {
 						return;
 					byte[] newData = new byte[comPort.bytesAvailable()];
 					
-					@SuppressWarnings("unused")
 					int bytes_read = comPort.readBytes(newData, newData.length);
 					
-					@SuppressWarnings("unused")
-					String s = "";
 					try {
 						String incoming = new String(newData, "UTF-8");
-						//System.out.print(incoming);
+						//System.out.println(incoming);
 						if(incoming.trim().endsWith(">"))
 						{
+							//System.out.println("> Received");
 							if(starting_stage == 0)
 								starting_stage = 1;
 							else if(starting_stage == 1)
 								starting_stage = 2;
-							else
+							else if(starting_stage == 2)
+								starting_stage = 3;
+							if(starting_stage == 3)
 								ready_to_send = true;
+							//System.out.println("Ready to Send: " + ready_to_send + " (" + starting_stage + ")");
 						}
+						
+						if(!ready_to_send)
+						{
+							response_lines[0] += incoming.trim().replace("\r", "").replace(" ", "");
+						}
+						else
+						{
+							System.out.println(response_lines[0]);
+							UI_Data_Store.current_data=response_lines[0];
+							UI_Data_Store.timestamp = new Timestamp(System.currentTimeMillis());
+							response_lines[0] = "";
+						}
+						/*
 						if(incoming.indexOf("\n") >=0 || incoming.indexOf("\r") >= 0 && started_polling)
 						{
 							response_lines[count_responses] = response_lines[count_responses] + incoming.trim();
-							s = incoming;
 							count_responses++;
 						} else
 						{
 							response_lines[count_responses] = incoming.trim();
 						}
-						if(count_responses == 5)
+						if(ready_to_send)
 						{
 							count_responses = 0;
-							String final_response = response_lines[0].trim() + " " + response_lines[1].trim() + " " + response_lines[2].trim() + " " + response_lines[3].trim() + " " + response_lines[4].trim();
+							String final_response = "";
+							System.out.println("Response Lines: " + response_lines.length);
+							for(int i= 0; i<response_lines.length; i++)
+								final_response += response_lines[i].trim();
+									//response_lines[0].trim() + " " + response_lines[1].trim() + " " + response_lines[2].trim() + " " + response_lines[3].trim() + " " + response_lines[4].trim();
 							final_response = final_response.replace("\r", " ");
 							final_response = final_response.replace(" ", "");
+							final_response = final_response.replace(">", "");
 							
-							//System.out.println(final_response);
-							interpreter.input_string(final_response);
+							System.out.println(final_response);
+							//interpreter.input_string(final_response);
 							UI_Data_Store.timestamp = new Timestamp(System.currentTimeMillis());
 						}
+						*/
 						//}
 						//else
 							//System.out.println("Bad Data: " + incoming);
+						
 					} catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
@@ -135,7 +153,7 @@ public class Serial_Port  {
 				}
 			});
 			serial_stage();
-			return true;
+
 		}
 	}
 	
@@ -143,7 +161,7 @@ public class Serial_Port  {
 		Thread thread = new Thread(new Runnable() {
 	        @Override
 	        public void run() {
-	            while (true && (starting_stage==0 || starting_stage==1)) {
+	            while (true && (starting_stage==0 || starting_stage==1 || starting_stage==2)) {
 	                try {
 	                	try {
 	                		
@@ -151,16 +169,19 @@ public class Serial_Port  {
 	                			sendStringToComm("AT Z");
 	                		else if(starting_stage == 1)
 	                			sendStringToComm("AT E0");
+	                		else if(starting_stage == 2)
+	                			sendStringToComm("0100");
 	        			} catch (Exception e) {
 	        				e.printStackTrace();
 	        			}
-	                	Thread.sleep(2000);
+	                	Thread.sleep(1000);
 	                } catch (InterruptedException ex) {
 	                }
 	            }
 	        }
 
 	    });
+		//thread.setDaemon(true);
 		thread.start();
 	}
 
@@ -172,18 +193,13 @@ public class Serial_Port  {
 		} else
 		{
 			//Send only if ready OR if reset command
-			if(ready_to_send || command == "AT Z" || command == "AT E0")
+			if(ready_to_send || command == "AT Z" || command == "AT E0" || command == "0100")
 			{
 				ready_to_send = false;
 				String new_command = command + "\r";
 				last_sent = command;
-				response_lines[0] = "";
-				response_lines[1] = "";
-				response_lines[2] = "";
-				response_lines[3] = "";
-				response_lines[4] = "";
 				count_responses=0;
-				System.out.println("Sent [" + port + "]: " + command);
+				System.out.println("Sent [" + port + "]: " + new_command);
 				comPort.writeBytes(new_command.getBytes(), new_command.length());
 			}
 		}
