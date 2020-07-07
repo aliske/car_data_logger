@@ -24,12 +24,12 @@ public class Serial_Port  {
 	static SerialPort comPort;
 	static int chosen_port = -1;
 	static int count_responses = 0;
-	static String[] response_lines = {"","","","","","","","","","","",""};
+	static String[] response_lines = {""};
 	static Boolean ready_to_send = false;
 	static Boolean started_polling = false;
 	static Interpreter interpreter = new Interpreter();
 	static String OS = System.getProperty("os.name").toLowerCase();
-	static int starting_stage = 0;
+	static int obdii_setup_stage = 0;
 
 	public boolean query_ports()
 	{
@@ -47,7 +47,6 @@ public class Serial_Port  {
 	}
 	
 	public void init() {
-		
 		if(OS.indexOf("win") >= 0 && selected == false)
 		{
 			port = "COM3";
@@ -70,12 +69,11 @@ public class Serial_Port  {
 		} else
 		{
 			comPort = SerialPort.getCommPorts()[chosen_port];
-			//UI_StartWindow.txt_port_used.setText(port + " (" + comPort.getPortDescription() + ")");
 			comPort.setBaudRate(baud_rate);
 			comPort.setNumStopBits(1);
 			comPort.setNumDataBits(8);
 			comPort.openPort();
-
+			obdii_setup();
 			comPort.addDataListener(new SerialPortDataListener() {
 				@Override
 				public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
@@ -90,21 +88,17 @@ public class Serial_Port  {
 					
 					try {
 						String incoming = new String(newData, "UTF-8");
-						//System.out.println(incoming);
 						if(incoming.trim().endsWith(">"))
 						{
-							//System.out.println("> Received");
-							if(starting_stage == 0)
-								starting_stage = 1;
-							else if(starting_stage == 1)
-								starting_stage = 2;
-							else if(starting_stage == 2)
-								starting_stage = 3;
-							if(starting_stage == 3)
+							if(obdii_setup_stage == 0)
+								obdii_setup_stage = 1;
+							else if(obdii_setup_stage == 1)
+								obdii_setup_stage = 2;
+							else if(obdii_setup_stage == 2)
+								obdii_setup_stage = 3;
+							if(obdii_setup_stage == 3)
 								ready_to_send = true;
-							//System.out.println("Ready to Send: " + ready_to_send + " (" + starting_stage + ")");
 						}
-						
 						if(!ready_to_send)
 						{
 							response_lines[0] += incoming.trim().replace("\r", "").replace(" ", "");
@@ -115,61 +109,30 @@ public class Serial_Port  {
 							UI_Data_Store.current_data=response_lines[0];
 							UI_Data_Store.timestamp = new Timestamp(System.currentTimeMillis());
 							response_lines[0] = "";
-						}
-						/*
-						if(incoming.indexOf("\n") >=0 || incoming.indexOf("\r") >= 0 && started_polling)
-						{
-							response_lines[count_responses] = response_lines[count_responses] + incoming.trim();
-							count_responses++;
-						} else
-						{
-							response_lines[count_responses] = incoming.trim();
-						}
-						if(ready_to_send)
-						{
-							count_responses = 0;
-							String final_response = "";
-							System.out.println("Response Lines: " + response_lines.length);
-							for(int i= 0; i<response_lines.length; i++)
-								final_response += response_lines[i].trim();
-									//response_lines[0].trim() + " " + response_lines[1].trim() + " " + response_lines[2].trim() + " " + response_lines[3].trim() + " " + response_lines[4].trim();
-							final_response = final_response.replace("\r", " ");
-							final_response = final_response.replace(" ", "");
-							final_response = final_response.replace(">", "");
-							
-							System.out.println(final_response);
-							//interpreter.input_string(final_response);
-							UI_Data_Store.timestamp = new Timestamp(System.currentTimeMillis());
-						}
-						*/
-						//}
-						//else
-							//System.out.println("Bad Data: " + incoming);
-						
+						}						
 					} catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
 					
 				}
 			});
-			serial_stage();
-
+			
+			
 		}
 	}
 	
-	private void serial_stage() {
+	private void obdii_setup() {
 		Thread thread = new Thread(new Runnable() {
 	        @Override
 	        public void run() {
-	            while (true && (starting_stage==0 || starting_stage==1 || starting_stage==2)) {
+	            while (true && (obdii_setup_stage==0 || obdii_setup_stage==1 || obdii_setup_stage==2)) {
 	                try {
 	                	try {
-	                		
-	                		if(starting_stage == 0)
+	                		if(obdii_setup_stage == 0)
 	                			sendStringToComm("AT Z");
-	                		else if(starting_stage == 1)
+	                		else if(obdii_setup_stage == 1)
 	                			sendStringToComm("AT E0");
-	                		else if(starting_stage == 2)
+	                		else if(obdii_setup_stage == 2)
 	                			sendStringToComm("0100");
 	        			} catch (Exception e) {
 	        				e.printStackTrace();
@@ -189,10 +152,9 @@ public class Serial_Port  {
 		if(chosen_port == -1)
 		{
 			System.out.println("Cannot send command \"" + command + "\".  No Port Found....");
-			//AlertBox.display("No Port", "Cannot send command \"" + command + "\".  No Port Found....");
 		} else
 		{
-			//Send only if ready OR if reset command
+			//Send only if ready OR if one of the setup commands
 			if(ready_to_send || command == "AT Z" || command == "AT E0" || command == "0100")
 			{
 				ready_to_send = false;

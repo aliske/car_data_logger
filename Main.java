@@ -87,11 +87,6 @@ public class Main {
 									}
 	                    		}
                 			}
-                    		else
-                    		{
-                    			//System.out.println("Not started");
-                    		}
-                    		//System.out.println(String.valueOf(timer.end_time));
 	                    	try {
 	                    		if(timer.end_time < 0)
 	                    		{
@@ -145,8 +140,11 @@ public class Main {
             	while(true)
             	{
             		try {
-            			System.out.println("Current Data: " + UI_Data_Store.current_data);
-            			update_labels();
+            			if(UI_Data_Store.current_data.trim().length() > 0)
+            			{
+            				System.out.println("Current Data: " + UI_Data_Store.current_data);
+            				update_labels();
+            			}
             			if(UI_Data_Store.current_data != "")
             			{
             				interpreter.input_string(UI_Data_Store.current_data);
