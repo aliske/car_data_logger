@@ -171,7 +171,9 @@ public class Main {
             		UI_Screen_Monitor.speed_value_label.setText("N/A");
             	} else {
             		UI_Screen_Monitor.speed_value_label.setForeground(Color.white);
-            		UI_Screen_Monitor.speed_value_label.setText(UI_Data_Store.speed);
+            		UI_Screen_Monitor.speed_value_label.setText(UI_Data_Store.speed + " kph");
+            		float miles = (float) (Float.parseFloat(UI_Data_Store.speed) / 1.62);
+            		UI_Screen_Monitor.speed_mph_label.setText(Math.round(miles) + " mph");
             	}
             	if(UI_Data_Store.throttle.equals(""))
             	{

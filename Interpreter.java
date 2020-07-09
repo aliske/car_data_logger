@@ -183,7 +183,7 @@ public class Interpreter {
 			else if(pid.equals("0D")) 			//Vehicle Speed
 			{
 				result = (double) valueA;
-				UI_Data_Store.speed = df.format(result) + " kph";
+				UI_Data_Store.speed = df.format(result);
 			}
 			else if(pid.equals("0F")) 			//Intake Air Temperature
 			{

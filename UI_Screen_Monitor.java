@@ -1,7 +1,11 @@
 package car_data_logger;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,6 +24,7 @@ public class UI_Screen_Monitor {
 	static JLabel rpm_label = new JLabel("Engine RPM");
 	
 	static JLabel speed_value_label = new JLabel("0");
+	static JLabel speed_mph_label = new JLabel("0");
 	static JLabel fuel_value_label = new JLabel("0");
 	static JLabel throttle_value_label = new JLabel("0");
 	static JLabel coolant_value_label = new JLabel("0");
@@ -28,10 +33,15 @@ public class UI_Screen_Monitor {
 	
 	public static void show() {
 		f.setSize(675,400);
+		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+		Cursor blankCuror = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0,0), "blank cursor");
+		f.getContentPane().setCursor(blankCuror);
 		speed_label.setHorizontalAlignment(SwingConstants.CENTER);
 		speed_label.setBounds(0, 70, 225, 30);
 		speed_label.setFont(new Font("Courier", 24, 24));
 		speed_label.setForeground(Color.white);
+		
+		
 		
 		fuel_label.setHorizontalAlignment(SwingConstants.CENTER);
 		fuel_label.setBounds(225, 70, 225, 30);
@@ -47,6 +57,11 @@ public class UI_Screen_Monitor {
 		speed_value_label.setBounds(0, 100, 225, 60);
 		speed_value_label.setFont(new Font("Courier", 56, 56));
 		speed_value_label.setForeground(Color.white);
+		
+		speed_mph_label.setHorizontalAlignment(SwingConstants.CENTER);
+		speed_mph_label.setBounds(0, 180, 225, 60);
+		speed_mph_label.setFont(new Font("Courier", 36, 36));
+		speed_mph_label.setForeground(Color.white);
 		
 		fuel_value_label.setHorizontalAlignment(SwingConstants.CENTER);
 		fuel_value_label.setBounds(225, 100, 225, 60);
@@ -104,6 +119,7 @@ public class UI_Screen_Monitor {
 		f.add(intake_label);
 		f.add(rpm_label);
 		f.add(speed_value_label);
+		f.add(speed_mph_label);
 		f.add(fuel_value_label);
 		f.add(throttle_value_label);
 		f.add(coolant_value_label);
