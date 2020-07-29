@@ -6,7 +6,11 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -31,11 +35,25 @@ public class UI_Screen_Monitor {
 	static JLabel intake_value_label = new JLabel("0");
 	static JLabel rpm_value_label = new JLabel("0");
 	
+	static JLabel gps_indicator;
+	
 	public static void show() {
 		f.setSize(675,400);
 		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
 		Cursor blankCuror = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0,0), "blank cursor");
 		f.getContentPane().setCursor(blankCuror);
+		
+		BufferedImage icon;
+		try {
+			icon = ImageIO.read(new File("red_light.png"));
+			
+			gps_indicator = new JLabel(new ImageIcon(icon.getScaledInstance(50, 50,0)));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		gps_indicator.setBounds(600,10,50,50);
+		
 		speed_label.setHorizontalAlignment(SwingConstants.CENTER);
 		speed_label.setBounds(0, 70, 225, 30);
 		speed_label.setFont(new Font("Courier", 24, 24));
@@ -125,6 +143,7 @@ public class UI_Screen_Monitor {
 		f.add(coolant_value_label);
 		f.add(intake_value_label);
 		f.add(rpm_value_label);
+		f.add(gps_indicator);
 		//f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setUndecorated(true);
 		f.setVisible(true);

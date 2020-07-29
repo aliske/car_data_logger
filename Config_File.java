@@ -20,6 +20,8 @@ public class Config_File {
 			String database_username = props.getProperty("database_username");
 			String database_password = props.getProperty("database_password");
 			String tty_port = props.getProperty("tty_port");
+			String poll_speed = props.getProperty("poll_speed");
+			Main.poll_speed = Integer.parseInt(poll_speed);
 			Serial_Port.port = tty_port;
 			Serial_Port.selected = true;
 			UI_Screen_Main.database_host_text.setText(database_host);
@@ -42,6 +44,7 @@ public class Config_File {
 			props.setProperty("database_username", database_username);
 			props.setProperty("database_password", database_password);
 			props.setProperty("tty_port", Serial_Port.port);
+			props.setProperty("poll_speed", "100");
 			FileWriter writer = new FileWriter(configFile);
 			props.store(writer, "database settings");
 			writer.close();

@@ -18,11 +18,12 @@ import java.sql.Timestamp;
 public class Serial_Port  {
 	static int baud_rate = 38400;
 	static String port = "ttyUSB0";
+	static int chosen_port = -1;
 	static Boolean selected = false;
 	static String last_received = "";
 	static String last_sent = "";
 	static SerialPort comPort;
-	static int chosen_port = -1;
+	
 	static int count_responses = 0;
 	static String[] response_lines = {""};
 	static Boolean ready_to_send = false;
@@ -47,6 +48,7 @@ public class Serial_Port  {
 	}
 	
 	public void init() {
+		
 		if(OS.indexOf("win") >= 0 && selected == false)
 		{
 			port = "COM3";
@@ -122,10 +124,12 @@ public class Serial_Port  {
 	}
 	
 	private void obdii_setup() {
-		Thread thread = new Thread(new Runnable() {
+		Thread thread_setup = new Thread(new Runnable() {
 	        @Override
 	        public void run() {
-	            while (true && (obdii_setup_stage==0 || obdii_setup_stage==1 || obdii_setup_stage==2)) {
+	        	System.out.println("Running");
+	        	
+	            while (true && (obdii_setup_stage==0 || obdii_setup_stage==1 || obdii_setup_stage==2) && comPort.getSystemPortName() != null) {
 	                try {
 	                	try {
 	                		if(obdii_setup_stage == 0)
@@ -140,12 +144,13 @@ public class Serial_Port  {
 	                	Thread.sleep(1000);
 	                } catch (InterruptedException ex) {
 	                }
+	                
 	            }
 	        }
 
 	    });
 		//thread.setDaemon(true);
-		thread.start();
+		thread_setup.start();
 	}
 
 	static void sendStringToComm(String command) throws Exception {

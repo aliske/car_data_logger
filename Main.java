@@ -23,7 +23,7 @@ import com.pi4j.io.gpio.RaspiPin;
 public class Main {
 	static Serial_Port sp = null;
 	static boolean started = false;
-	
+	static int poll_speed = 25;
 	static Mysql_Connector mysql = new Mysql_Connector();
 	public static void main(String[] args) {
 		sp = new Serial_Port();
@@ -59,77 +59,74 @@ public class Main {
 		});
 
 		Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                
-                    	while(true)
-                    	{
-                    		if(started == true) {
-                				//System.out.println("started");
-	                    		//05: Coolant Temp
-	                    		//0C: Engine RPM
-	                    		//0D: Vehicle Speed
-	                    		//0F: Intake Air Temp
-	                    		//11: Throttle Position
-	                    		//2F: Fuel Level
-	                    		//5C: Oil Temp
-                    			
-	                    		if(Serial_Port.started_polling == false)
-	                    			Serial_Port.started_polling = true;
-	                    		if(Serial_Port.ready_to_send)
-	                    		{
-									try {
-											Serial_Port.sendStringToComm("01 45 05 0C 0D 0F 2F");
-									} catch (Exception e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-	                    		}
+            @Override
+            public void run() {                
+            	while(true)
+            	{
+            		if(started == true) {
+        				//System.out.println("started");
+                		//05: Coolant Temp
+                		//0C: Engine RPM
+                		//0D: Vehicle Speed
+                		//0F: Intake Air Temp
+                		//45: Throttle Position
+                		//2F: Fuel Level
+                		//5C: Oil Temp
+            			
+                		if(Serial_Port.started_polling == false)
+                			Serial_Port.started_polling = true;
+                		if(Serial_Port.ready_to_send)
+                		{
+							try {
+									Serial_Port.sendStringToComm("01 45 05 0C 0D 0F 2F");
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+                		}
+        			}
+                	try {
+                		if(timer.end_time < 0)
+                		{
+                			if(started == false)
+                			{
+                				UI_Screen_Main.port_list.setEnabled(false);
+                				UI_Screen_Main.database_host_text.setEnabled(false);
+                				UI_Screen_Main.database_name_text.setEnabled(false);
+                				UI_Screen_Main.database_username_text.setEnabled(false);
+                				UI_Screen_Main.database_password_text.setEnabled(false);
+                				started = true;
+                				if(UI_Screen_Monitor.displayed == false)
+                					UI_Screen_Monitor.show();
+                				initialize();
+                				
+                				System.out.println("Past init");
+                				if(mysql.connect())
+                				{
+                					System.out.println("MySQL Connected");
+                					Config_File config = new Config_File();
+                					config.attempt_write(UI_Screen_Main.database_host_text.getText(), UI_Screen_Main.database_name_text.getText(), UI_Screen_Main.database_username_text.getText(), UI_Screen_Main.database_password_text.getText());
+                				}
+                				else
+                					System.out.println("MySQL Failed to Connect");
+                				
                 			}
-	                    	try {
-	                    		if(timer.end_time < 0)
-	                    		{
-	                    			if(started == false)
-	                    			{
-	                    				UI_Screen_Main.port_list.setEnabled(false);
-	                    				UI_Screen_Main.database_host_text.setEnabled(false);
-	                    				UI_Screen_Main.database_name_text.setEnabled(false);
-	                    				UI_Screen_Main.database_username_text.setEnabled(false);
-	                    				UI_Screen_Main.database_password_text.setEnabled(false);
-	                    				started = true;
-	                    				if(UI_Screen_Monitor.displayed == false)
-	                    					UI_Screen_Monitor.show();
-	                    				initialize();
-	                    				
-	                    				System.out.println("Past init");
-	                    				if(mysql.connect())
-	                    				{
-	                    					System.out.println("MySQL Connected");
-	                    					Config_File config = new Config_File();
-	                    					config.attempt_write(UI_Screen_Main.database_host_text.getText(), UI_Screen_Main.database_name_text.getText(), UI_Screen_Main.database_username_text.getText(), UI_Screen_Main.database_password_text.getText());
-	                    				}
-	                    				else
-	                    					System.out.println("MySQL Failed to Connect");
-	                    				
-	                    			}
-	                    			
-	                    		}
-	                    		else
-	                    		{
-	                    			//System.out.println(String.valueOf(timer.end_time));
-	                    		}
-	                    		Thread.sleep(250);
-	            			} catch (Exception e) {
-	            				e.printStackTrace();
-	            			}
-	                    }
-                    }
-                    private void initialize() {
-                    	sp.init();
-                    }
-                    
-                    
+                			
+                		}
+                		else
+                		{
+                			//System.out.println(String.valueOf(timer.end_time));
+                		}
+                		Thread.sleep(poll_speed);
+        			} catch (Exception e) {
+        				e.printStackTrace();
+        			}
+                }
+            }
+            private void initialize() {
+            	sp.init();
+            }
+                        
         });
 		
 		
@@ -149,7 +146,7 @@ public class Main {
             			{
             				interpreter.input_string(UI_Data_Store.current_data);
             			}
-						Thread.sleep(100);
+						Thread.sleep(poll_speed);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

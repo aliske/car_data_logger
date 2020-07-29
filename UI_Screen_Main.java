@@ -2,8 +2,13 @@ package car_data_logger;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,6 +33,7 @@ public class UI_Screen_Main {
 	static JLabel gpio_label = new JLabel("GPIO Header Found on Board");
 	static JPasswordField database_password_text = new JPasswordField("");
 	static DefaultListModel<String> l1 = new DefaultListModel<>();
+	static JLabel gps_indicator;
 	static JList<String> port_list = new JList<>(l1);
 	UI_Screen_Main() {
 	}
@@ -47,6 +53,17 @@ public class UI_Screen_Main {
 		database_password_text.setBounds(347,250,317,30);
 		timer_label.setBounds(600,360,75,50);
 		gpio_label.setBounds(10,360,327,50);
+		
+		BufferedImage icon;
+		try {
+			icon = ImageIO.read(new File("red_light.png"));
+			
+			gps_indicator = new JLabel(new ImageIcon(icon.getScaledInstance(50, 50,0)));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		gps_indicator.setBounds(600,10,50,50);
 		main_label.setFont(new Font("Courier", 24, 24));
 		timer_label.setFont(new Font("Courier", 24, 24));
 		timer_label.setForeground(Color.RED);
@@ -69,6 +86,7 @@ public class UI_Screen_Main {
 		f.add(database_password_text);
 		f.add(gpio_label);
 		f.add(selected_port_label);
+		f.add(gps_indicator);
 		f.setSize(675,400);
 		f.setLayout(null);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
